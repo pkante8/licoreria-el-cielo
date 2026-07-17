@@ -13,7 +13,7 @@ public class ConexionBaseDatos {
     // Datos de conexión a la base de datos
     private static final String URL = "jdbc:mysql://localhost:3306/licoreria_el_cielo";
     private static final String USUARIO = "root";
-    private static final String CONTRASENA = "";
+    private static final String CONTRASENA = "123456";
 
     /**
      * Establece y retorna la conexión con la base de datos.

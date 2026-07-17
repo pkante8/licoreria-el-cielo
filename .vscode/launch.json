@@ -1,0 +1,12 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "MenuProductos",
+            "request": "launch",
+            "mainClass": "com.licoreriaelcielo.vista.MenuProductos",
+            "projectName": "licoreria-el-cielo-java"
+        }
+    ]
+}
