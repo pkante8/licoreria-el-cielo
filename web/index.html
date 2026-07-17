@@ -1,0 +1,1807 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Licorería El Cielo - Sistema de Gestión</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- SVG sprite reutilizable -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="bottle" viewBox="0 0 60 160">
+      <rect class="bottle-cap" x="24" y="0" width="12" height="14" rx="1"/>
+      <rect class="bottle-neck" x="22" y="14" width="16" height="22"/>
+      <path class="bottle-base" d="M 16 36 L 16 60 Q 12 64 12 76 L 12 150 Q 12 156 18 156 L 42 156 Q 48 156 48 150 L 48 76 Q 48 64 44 60 L 44 36 Z"/>
+      <rect class="bottle-label" x="16" y="80" width="28" height="40" rx="2"/>
+    </symbol>
+    <symbol id="bag" viewBox="0 0 24 24">
+      <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" stroke-linejoin="round" stroke-linecap="round"/>
+      <line x1="3" y1="6" x2="21" y2="6" stroke-linejoin="round" stroke-linecap="round"/>
+      <path d="M16 10a4 4 0 01-8 0" stroke-linejoin="round" stroke-linecap="round"/>
+    </symbol>
+  </defs>
+</svg>
+
+<main>
+
+  <!-- ============================================================
+       BARRA DE NAVEGACIÓN (visible solo después del login)
+       Cambia de módulo sin recargar.
+       ============================================================ -->
+  <nav class="dashboard-nav">
+    <div class="dashboard-nav-inner">
+      <div class="dashboard-brand">
+        <div class="logo-icon logo-icon-sm"><svg viewBox="0 0 24 24"><use href="#bag"/></svg></div>
+        <div class="dashboard-brand-text">
+          <strong>Licorería El Cielo</strong>
+          <span class="dashboard-role-label">
+            <span class="cliente-only">Portal Cliente</span>
+            <span class="admin-only">Panel Administrador</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="dashboard-tabs" role="tablist">
+        <!-- Pestañas del CLIENTE -->
+        <button class="dashboard-tab cliente-only" data-nav="catalogo" role="tab">
+          <svg viewBox="0 0 24 24" width="18" height="18" style="stroke:currentColor; fill:none; stroke-width:2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Catálogo
+        </button>
+        <button class="dashboard-tab cliente-only" data-nav="promociones" role="tab">
+          <svg viewBox="0 0 24 24" width="18" height="18" style="stroke:currentColor; fill:none; stroke-width:2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" stroke-linecap="round" stroke-linejoin="round"/><line x1="7" y1="7" x2="7.01" y2="7" stroke-linecap="round"/></svg>
+          Promos
+        </button>
+        <button class="dashboard-tab cliente-only" data-nav="favoritos" role="tab">
+          <svg viewBox="0 0 24 24" width="18" height="18" style="stroke:currentColor; fill:none; stroke-width:2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Favoritos
+          <span class="tab-badge fav-badge">0</span>
+        </button>
+        <button class="dashboard-tab cliente-only" data-nav="carrito" role="tab">
+          <svg viewBox="0 0 24 24" width="18" height="18" style="stroke:currentColor; fill:none; stroke-width:2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Carrito
+          <span class="cart-badge tab-badge">0</span>
+        </button>
+        <button class="dashboard-tab cliente-only" data-nav="pedidos" role="tab">
+          <svg viewBox="0 0 24 24" width="18" height="18" style="stroke:currentColor; fill:none; stroke-width:2"><path d="M9 11l3 3L22 4" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Pedidos
+        </button>
+        <button class="dashboard-tab cliente-only" data-nav="perfil" role="tab">
+          <svg viewBox="0 0 24 24" width="18" height="18" style="stroke:currentColor; fill:none; stroke-width:2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Mi Perfil
+        </button>
+
+        <!-- Pestañas del ADMINISTRADOR -->
+        <button class="dashboard-tab admin-only" data-nav="dashboard-admin" role="tab">
+          <svg viewBox="0 0 24 24" width="18" height="18" style="stroke:currentColor; fill:none; stroke-width:2"><rect x="3" y="3" width="7" height="9" stroke-linecap="round" stroke-linejoin="round"/><rect x="14" y="3" width="7" height="5" stroke-linecap="round" stroke-linejoin="round"/><rect x="14" y="12" width="7" height="9" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="16" width="7" height="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Dashboard
+        </button>
+        <button class="dashboard-tab admin-only" data-nav="inventario" role="tab">
+          <svg viewBox="0 0 24 24" width="18" height="18" style="stroke:currentColor; fill:none; stroke-width:2"><line x1="12" y1="20" x2="12" y2="10" stroke-linecap="round"/><line x1="18" y1="20" x2="18" y2="4" stroke-linecap="round"/><line x1="6" y1="20" x2="6" y2="16" stroke-linecap="round"/></svg>
+          Inventario
+        </button>
+        <button class="dashboard-tab admin-only" data-nav="catalogo" role="tab">
+          <svg viewBox="0 0 24 24" width="18" height="18" style="stroke:currentColor; fill:none; stroke-width:2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Catálogo
+        </button>
+        <button class="dashboard-tab admin-only" data-nav="pedidos" role="tab">
+          <svg viewBox="0 0 24 24" width="18" height="18" style="stroke:currentColor; fill:none; stroke-width:2"><path d="M9 11l3 3L22 4" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Pedidos
+        </button>
+        <button class="dashboard-tab admin-only" data-nav="usuarios" role="tab">
+          <svg viewBox="0 0 24 24" width="18" height="18" style="stroke:currentColor; fill:none; stroke-width:2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Usuarios
+        </button>
+        <button class="dashboard-tab admin-only" data-nav="admin-promociones" role="tab">
+          <svg viewBox="0 0 24 24" width="18" height="18" style="stroke:currentColor; fill:none; stroke-width:2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" stroke-linecap="round" stroke-linejoin="round"/><line x1="7" y1="7" x2="7.01" y2="7" stroke-linecap="round"/></svg>
+          Promociones
+        </button>
+        <button class="dashboard-tab admin-only" data-nav="reportes" role="tab">
+          <svg viewBox="0 0 24 24" width="18" height="18" style="stroke:currentColor; fill:none; stroke-width:2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke-linecap="round" stroke-linejoin="round"/><polyline points="14 2 14 8 20 8" stroke-linecap="round" stroke-linejoin="round"/><line x1="16" y1="13" x2="8" y2="13" stroke-linecap="round"/><line x1="16" y1="17" x2="8" y2="17" stroke-linecap="round"/></svg>
+          Reportes
+        </button>
+      </div>
+
+      <div class="dashboard-actions">
+        <!-- Botón de notificaciones (con dropdown) -->
+        <div class="notif-wrap">
+          <button class="notif-btn" id="notif-btn" aria-label="Notificaciones">
+            <svg viewBox="0 0 24 24" width="20" height="20" style="stroke:currentColor; fill:none; stroke-width:2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.73 21a2 2 0 01-3.46 0" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Notificaciones</span>
+            <span class="notif-dot" id="notif-dot"></span>
+          </button>
+          <div class="notif-dropdown" id="notif-dropdown" aria-hidden="true">
+            <div class="notif-header">
+              <strong>Notificaciones</strong>
+              <button class="notif-clear" id="notif-clear">Marcar todas leídas</button>
+            </div>
+            <ul class="notif-list" id="notif-list">
+              <!-- Las notificaciones se inyectan dinámicamente desde JS -->
+            </ul>
+          </div>
+        </div>
+
+        <button class="dashboard-logout" data-logout aria-label="Cerrar sesión" title="Cerrar sesión">
+          <svg viewBox="0 0 24 24" width="18" height="18" style="stroke:currentColor; fill:none; stroke-width:2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke-linecap="round" stroke-linejoin="round"/><polyline points="16 17 21 12 16 7" stroke-linecap="round" stroke-linejoin="round"/><line x1="21" y1="12" x2="9" y2="12" stroke-linecap="round"/></svg>
+          <span>Salir</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Botón hamburguesa para móvil (abre el sidebar) -->
+  <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Abrir menú">
+    <svg viewBox="0 0 24 24" width="20" height="20" style="stroke:currentColor; fill:none; stroke-width:2"><line x1="3" y1="6" x2="21" y2="6" stroke-linecap="round"/><line x1="3" y1="12" x2="21" y2="12" stroke-linecap="round"/><line x1="3" y1="18" x2="21" y2="18" stroke-linecap="round"/></svg>
+  </button>
+  <!-- Overlay oscuro detrás del sidebar abierto en móvil -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- ============================================================
+       1. LOGIN
+       ============================================================ -->
+  <section id="login" class="screen active">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24"><use href="#bag"/></svg>
+        </div>
+        <h2>Licorería El Cielo</h2>
+        <p>Sistema de Gestión y Ventas</p>
+      </div>
+
+      <!-- Pestañas para elegir el rol -->
+      <div class="role-tabs" role="tablist">
+        <button type="button" class="role-tab active" data-role="cliente" role="tab" aria-selected="true">
+          <svg viewBox="0 0 24 24" width="16" height="16" style="stroke:currentColor; fill:none; stroke-width:2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Cliente
+        </button>
+        <button type="button" class="role-tab" data-role="admin" role="tab" aria-selected="false">
+          <svg viewBox="0 0 24 24" width="16" height="16" style="stroke:currentColor; fill:none; stroke-width:2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Administrador
+        </button>
+      </div>
+
+      <div class="demo-hint" style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 10px 12px; margin-bottom: 16px; font-size: 12px; color: var(--gris-claro);">
+        <strong style="color: var(--dorado-principal);">Credenciales de prueba:</strong><br>
+        <span data-hint-cliente><span style="color: var(--blanco-principal);">cliente@elcielo.com</span> / <span style="color: var(--blanco-principal);">123456</span></span>
+        <span data-hint-admin style="display:none;"><span style="color: var(--blanco-principal);">admin@elcielo.com</span> / <span style="color: var(--blanco-principal);">admin123</span></span>
+      </div>
+      <form id="login-form">
+        <div class="form-group">
+          <label class="form-label">Email o Usuario</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke-linecap="round" stroke-linejoin="round"/><polyline points="22,6 12,13 2,6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <input type="email" id="login-email" class="form-input has-icon" placeholder="correo@ejemplo.com">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contraseña</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 11V7a5 5 0 0110 0v4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <input type="password" id="login-password" class="form-input has-icon" placeholder="••••••••">
+            <button type="button" class="input-action" aria-label="Ver contraseña" data-toggle-password="login-password">
+              <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:8px;">Iniciar Sesión</button>
+        <div class="auth-footer-link">
+          <a href="#" id="forgot-password-link">¿Olvidaste tu contraseña?</a>
+        </div>
+        <div class="auth-footer-link" style="margin-top: 8px;">
+          ¿No tienes cuenta? <a href="#registro">Regístrate aquí</a>
+        </div>
+      </form>
+    </div>
+    <p class="copyright" style="position:absolute; bottom:24px; left:50%; transform:translateX(-50%);">© 2025 Licorería El Cielo. Todos los derechos reservados.</p>
+  </section>
+
+  <!-- ============================================================
+       2. REGISTRO
+       ============================================================ -->
+  <section id="registro" class="screen" style="background: radial-gradient(circle at 30% 40%, rgba(245, 158, 11, 0.08), transparent 50%), var(--azul-noche-profundo);">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="logo-icon"><svg viewBox="0 0 24 24"><use href="#bag"/></svg></div>
+        <h2>Licorería El Cielo</h2>
+        <p>Registro de Usuario</p>
+      </div>
+      <form id="registro-form">
+        <div class="form-group">
+          <label class="form-label">Nombres</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <input type="text" class="form-input has-icon" placeholder="Juan Carlos">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Apellidos</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <input type="text" class="form-input has-icon" placeholder="Pérez García">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha de Nacimiento</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="16" y1="2" x2="16" y2="6" stroke-linecap="round" stroke-linejoin="round"/><line x1="8" y1="2" x2="8" y2="6" stroke-linecap="round" stroke-linejoin="round"/><line x1="3" y1="10" x2="21" y2="10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <input type="date" class="form-input has-icon" placeholder="dd/mm/aaaa">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cédula</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="2" y1="10" x2="22" y2="10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <input type="text" class="form-input has-icon" placeholder="0000000000">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:8px;">Guardar Usuario</button>
+        <div class="auth-footer-link">
+          <a href="#login">Volver al inicio de sesión</a>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       3. CATÁLOGO DE PRODUCTOS
+       ============================================================ -->
+  <section id="catalogo" class="screen">
+    <header class="app-header">
+      <div class="app-header-brand">
+        <div class="logo-icon logo-icon-sm"><svg viewBox="0 0 24 24"><use href="#bag"/></svg></div>
+        <div>
+          <h1>Licorería El Cielo</h1>
+          <p>Sistema de Gestión</p>
+        </div>
+      </div>
+      <div class="app-header-actions">
+        <button class="icon-btn" aria-label="Menú">
+          <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6" stroke-linecap="round"/><line x1="3" y1="12" x2="21" y2="12" stroke-linecap="round"/><line x1="3" y1="18" x2="21" y2="18" stroke-linecap="round"/></svg>
+        </button>
+        <a href="#carrito" class="icon-btn cliente-only" aria-label="Carrito">
+          <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1" stroke-linecap="round"/><circle cx="20" cy="21" r="1" stroke-linecap="round"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="cart-badge">0</span>
+        </a>
+        <button class="icon-btn" data-logout aria-label="Cerrar sesión" title="Cerrar sesión">
+          <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke-linecap="round" stroke-linejoin="round"/><polyline points="16 17 21 12 16 7" stroke-linecap="round" stroke-linejoin="round"/><line x1="21" y1="12" x2="9" y2="12" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div style="max-width: 1280px; margin: 0 auto;">
+      <div class="catalog-header">
+        <div class="catalog-title">
+          <h2>Catálogo de Productos</h2>
+          <p>Explora nuestra selección de licores premium</p>
+        </div>
+        <div class="catalog-controls">
+          <div class="search-input-wrap">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-linecap="round"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round"/></svg>
+            <input type="text" placeholder="Buscar productos...">
+          </div>
+          <button class="filter-chip">
+            <svg viewBox="0 0 24 24" style="stroke:currentColor; fill:none; stroke-width:2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Filtros
+          </button>
+        </div>
+      </div>
+
+      <div class="product-grid">
+        <article class="product-card">
+          <div class="product-image">
+            <span class="product-tag right">Whisky</span>
+            <svg class="bottle-svg" viewBox="0 0 60 160"><use href="#bottle"/></svg>
+          </div>
+          <div class="product-info">
+            <h3 class="product-name">Whisky Premium</h3>
+            <p class="product-desc">Whisky escocés añejado 12 años, notas ahumadas y especiadas</p>
+            <div class="product-bottom">
+              <div class="product-price-block">
+                <div class="label">Precio</div>
+                <div class="product-price">$ 360.000</div>
+              </div>
+              <button class="btn-add cliente-only">
+                <svg viewBox="0 0 24 24" style="stroke:currentColor; fill:none; stroke-width:2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+                Agregar
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-image">
+            <span class="product-tag right">Vino</span>
+            <svg class="bottle-svg" viewBox="0 0 60 160"><use href="#bottle"/></svg>
+          </div>
+          <div class="product-info">
+            <h3 class="product-name">Vino Tinto Reserva</h3>
+            <p class="product-desc">Vino tinto de cuerpo completo con toques de cereza y vainilla</p>
+            <div class="product-bottom">
+              <div class="product-price-block">
+                <div class="label">Precio</div>
+                <div class="product-price">$ 182.000</div>
+              </div>
+              <button class="btn-add cliente-only">
+                <svg viewBox="0 0 24 24" style="stroke:currentColor; fill:none; stroke-width:2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+                Agregar
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-image">
+            <span class="product-tag right">Vodka</span>
+            <svg class="bottle-svg" viewBox="0 0 60 160"><use href="#bottle"/></svg>
+          </div>
+          <div class="product-info">
+            <h3 class="product-name">Vodka Premium</h3>
+            <p class="product-desc">Vodka destilado cinco veces, sabor limpio y suave</p>
+            <div class="product-bottom">
+              <div class="product-price-block">
+                <div class="label">Precio</div>
+                <div class="product-price">$ 140.000</div>
+              </div>
+              <button class="btn-add cliente-only">
+                <svg viewBox="0 0 24 24" style="stroke:currentColor; fill:none; stroke-width:2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+                Agregar
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-image">
+            <span class="product-tag right">Ron</span>
+            <svg class="bottle-svg" viewBox="0 0 60 160"><use href="#bottle"/></svg>
+          </div>
+          <div class="product-info">
+            <h3 class="product-name">Ron Añejo</h3>
+            <p class="product-desc">Ron caribeño añejado en barricas de roble, dulce y aromático</p>
+            <div class="product-bottom">
+              <div class="product-price-block">
+                <div class="label">Precio</div>
+                <div class="product-price">$ 212.000</div>
+              </div>
+              <button class="btn-add cliente-only">
+                <svg viewBox="0 0 24 24" style="stroke:currentColor; fill:none; stroke-width:2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+                Agregar
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-image">
+            <span class="product-tag right">Tequila</span>
+            <svg class="bottle-svg" viewBox="0 0 60 160"><use href="#bottle"/></svg>
+          </div>
+          <div class="product-info">
+            <h3 class="product-name">Tequila Reposado</h3>
+            <p class="product-desc">Tequila 100% agave reposado, sabor equilibrado y suave</p>
+            <div class="product-bottom">
+              <div class="product-price-block">
+                <div class="label">Precio</div>
+                <div class="product-price">$ 196.000</div>
+              </div>
+              <button class="btn-add cliente-only">
+                <svg viewBox="0 0 24 24" style="stroke:currentColor; fill:none; stroke-width:2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+                Agregar
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-image">
+            <span class="product-tag right">Champagne</span>
+            <svg class="bottle-svg" viewBox="0 0 60 160"><use href="#bottle"/></svg>
+          </div>
+          <div class="product-info">
+            <h3 class="product-name">Champagne Brut</h3>
+            <p class="product-desc">Champagne francés con burbujas finas y elegante acabado</p>
+            <div class="product-bottom">
+              <div class="product-price-block">
+                <div class="label">Precio</div>
+                <div class="product-price">$ 380.000</div>
+              </div>
+              <button class="btn-add cliente-only">
+                <svg viewBox="0 0 24 24" style="stroke:currentColor; fill:none; stroke-width:2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+                Agregar
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div style="text-align:center; margin-top:32px;">
+        <button class="btn btn-secondary btn-lg">Cargar más productos</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       4. CARRITO DE COMPRAS
+       ============================================================ -->
+  <section id="carrito" class="screen">
+    <header class="app-header">
+      <div class="app-header-brand">
+        <div class="logo-icon logo-icon-sm"><svg viewBox="0 0 24 24"><use href="#bag"/></svg></div>
+        <div><h1>Licorería El Cielo</h1><p>Sistema de Gestión</p></div>
+      </div>
+      <div class="app-header-actions">
+        <button class="icon-btn"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6" stroke-linecap="round"/><line x1="3" y1="12" x2="21" y2="12" stroke-linecap="round"/><line x1="3" y1="18" x2="21" y2="18" stroke-linecap="round"/></svg></button>
+        <button class="icon-btn"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="cart-badge">4</span></button>
+      </div>
+    </header>
+
+    <div style="max-width: 1280px; margin: 0 auto;">
+      <div class="cart-back-header">
+        <a href="#catalogo" class="back-btn icon-btn"><svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12" stroke-linecap="round"/><polyline points="12 19 5 12 12 5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <div class="cart-title">
+          <h2>Carrito de Compras</h2>
+          <p>3 productos en tu carrito</p>
+        </div>
+      </div>
+
+      <div class="cart-layout">
+        <div class="cart-items">
+          <article class="cart-item">
+            <div class="cart-item-img"><svg class="bottle-svg" viewBox="0 0 60 160"><use href="#bottle"/></svg></div>
+            <div class="cart-item-content">
+              <div class="cart-item-top">
+                <div>
+                  <h3 class="cart-item-name">Whisky Premium</h3>
+                  <p class="cart-item-desc">Whisky escocés añejado 12 años</p>
+                  <span class="cart-item-tag">Whisky</span>
+                </div>
+                <button class="trash-btn"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              </div>
+              <div class="cart-item-bottom">
+                <div class="qty-control">
+                  <button class="qty-btn">−</button>
+                  <span class="qty-value">2</span>
+                  <button class="qty-btn">+</button>
+                </div>
+                <div class="cart-item-price-block">
+                  <div class="cart-item-price-label">Precio</div>
+                  <div class="cart-item-price">$ 720.000</div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="cart-item">
+            <div class="cart-item-img"><svg class="bottle-svg" viewBox="0 0 60 160"><use href="#bottle"/></svg></div>
+            <div class="cart-item-content">
+              <div class="cart-item-top">
+                <div>
+                  <h3 class="cart-item-name">Vino Tinto Reserva</h3>
+                  <p class="cart-item-desc">Vino tinto de cuerpo completo</p>
+                  <span class="cart-item-tag">Vino</span>
+                </div>
+                <button class="trash-btn"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              </div>
+              <div class="cart-item-bottom">
+                <div class="qty-control">
+                  <button class="qty-btn">−</button>
+                  <span class="qty-value">1</span>
+                  <button class="qty-btn">+</button>
+                </div>
+                <div class="cart-item-price-block">
+                  <div class="cart-item-price-label">Precio</div>
+                  <div class="cart-item-price">$ 182.000</div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="cart-item">
+            <div class="cart-item-img"><svg class="bottle-svg" viewBox="0 0 60 160"><use href="#bottle"/></svg></div>
+            <div class="cart-item-content">
+              <div class="cart-item-top">
+                <div>
+                  <h3 class="cart-item-name">Tequila Reposado</h3>
+                  <p class="cart-item-desc">Tequila 100% agave reposado</p>
+                  <span class="cart-item-tag">Tequila</span>
+                </div>
+                <button class="trash-btn"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              </div>
+              <div class="cart-item-bottom">
+                <div class="qty-control">
+                  <button class="qty-btn">−</button>
+                  <span class="qty-value">1</span>
+                  <button class="qty-btn">+</button>
+                </div>
+                <div class="cart-item-price-block">
+                  <div class="cart-item-price-label">Precio</div>
+                  <div class="cart-item-price">$ 196.000</div>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <aside class="summary-card">
+          <h3 class="summary-title">Resumen de Compra</h3>
+          <div class="form-group">
+            <label class="form-label" style="font-size:13px;">Código de descuento</label>
+            <div class="discount-row">
+              <div class="discount-input-wrap">
+                <svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" stroke-linecap="round" stroke-linejoin="round"/><line x1="7" y1="7" x2="7.01" y2="7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <input type="text" placeholder="CIELO10">
+              </div>
+              <button class="btn btn-secondary" style="padding:10px 18px;">Aplicar</button>
+            </div>
+          </div>
+          <div class="summary-row">
+            <span class="label">Subtotal</span>
+            <span>$ 1.098.000</span>
+          </div>
+          <div class="summary-row">
+            <span class="label">Envío</span>
+            <span>Gratis</span>
+          </div>
+          <p class="summary-note">✓ Envío gratis en compras mayores a $ 400.000</p>
+          <div class="summary-divider"></div>
+          <div class="summary-total">
+            <span class="label">Total</span>
+            <span class="value">$ 1.098.000</span>
+          </div>
+          <a href="#datos-cliente" class="btn btn-primary btn-block btn-lg">Finalizar Compra</a>
+          <a href="#catalogo" class="btn-link">Continuar comprando</a>
+          <div class="summary-secure">
+            <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 11V7a5 5 0 0110 0v4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Pago 100% seguro y protegido
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       5. DATOS DEL CLIENTE / CHECKOUT
+       ============================================================ -->
+  <section id="datos-cliente" class="screen">
+    <div style="max-width: 1280px; margin: 0 auto;">
+      <h1 class="page-title" style="margin-bottom:24px;">
+        <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1" stroke-linecap="round"/><circle cx="20" cy="21" r="1" stroke-linecap="round"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Finalizar Compra
+      </h1>
+
+      <div style="display: grid; grid-template-columns: 1fr 380px; gap: 24px; align-items: start;">
+        <div>
+          <article class="card section-card">
+            <div class="card-header-title" style="margin-bottom:18px;">
+              <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Datos del Cliente
+            </div>
+            <form id="checkout-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Nombre Completo</label>
+                  <input type="text" class="form-input" value="María Fernanda Rodríguez" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">☎ Teléfono</label>
+                  <input type="text" class="form-input" value="+57 310 456 7890" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">✉ Correo Electrónico</label>
+                <input type="email" id="checkout-email" class="form-input" value="maria.rodriguez@email.com" required>
+              </div>
+            </form>
+          </article>
+
+          <article class="card section-card">
+            <div class="card-header-title" style="margin-bottom:18px;">
+              <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="10" r="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Dirección de Entrega
+            </div>
+            <div class="form-group">
+              <label class="form-label">Dirección</label>
+              <input type="text" class="form-input" value="Calle 45 #23-67">
+            </div>
+            <div class="form-row-3">
+              <div class="form-group">
+                <label class="form-label">Barrio</label>
+                <input type="text" class="form-input" value="Chapinero">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Ciudad</label>
+                <input type="text" class="form-input" value="Bogotá">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Departamento</label>
+                <input type="text" class="form-input" value="Cundinamarca">
+              </div>
+            </div>
+          </article>
+
+          <article class="card section-card">
+            <h3 style="font-size:17px; font-weight:700; margin-bottom:14px;">Observaciones (Opcional)</h3>
+            <div class="form-group" style="margin-bottom:6px;">
+              <textarea class="form-input" placeholder="Ej: Tocar el timbre dos veces, portería azul, etc."></textarea>
+            </div>
+            <p style="color:var(--gris-claro); font-size:13px;">Agrega cualquier instrucción especial para la entrega</p>
+          </article>
+        </div>
+
+        <aside>
+          <article class="card section-card" style="border:1px solid rgba(245, 158, 11, 0.3); background: linear-gradient(135deg, var(--azul-oscuro-secundario) 0%, rgba(245, 158, 11, 0.04) 100%);">
+            <h3 style="font-size:18px; font-weight:700; margin-bottom:18px;">Resumen de Pago</h3>
+            <div class="summary-row"><span class="label">Subtotal:</span><span>$ 1.098.000</span></div>
+            <div class="summary-row"><span class="label">Envío:</span><span>$ 12.000</span></div>
+            <div class="summary-divider"></div>
+            <div class="summary-row" style="font-size:18px; font-weight:700;">
+              <span style="color:var(--dorado-principal);">Total:</span>
+              <span style="color:var(--dorado-principal);">$ 1.110.000</span>
+            </div>
+            <div class="payments-card">
+              <div class="label">Métodos de pago disponibles:</div>
+              <div class="payments-row">
+                <span class="payment-tag">Nequi</span>
+                <span class="payment-tag">PSE</span>
+                <span class="payment-tag">Efectivo</span>
+              </div>
+            </div>
+          </article>
+
+          <button type="submit" form="checkout-form" class="btn btn-primary btn-block btn-lg" style="margin-bottom:10px;">
+            <svg viewBox="0 0 24 24" style="width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke-linecap="round" stroke-linejoin="round"/><polyline points="22 4 12 14.01 9 11.01" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Confirmar Pedido
+          </button>
+          <a href="#carrito" class="btn btn-secondary btn-block" style="margin-bottom:18px;">
+            <svg viewBox="0 0 24 24" style="width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2"><line x1="19" y1="12" x2="5" y2="12" stroke-linecap="round"/><polyline points="12 19 5 12 12 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Volver al Carrito
+          </a>
+
+          <article class="card">
+            <div class="feature-row"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" stroke-linecap="round" stroke-linejoin="round"/></svg><span><strong>Entrega rápida:</strong> 1-2 horas en Bogotá</span></div>
+            <div class="feature-row"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 11V7a5 5 0 0110 0v4" stroke-linecap="round" stroke-linejoin="round"/></svg><span><strong>Compra segura:</strong> Tus datos están protegidos</span></div>
+            <div class="feature-row"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke-linecap="round" stroke-linejoin="round"/></svg><span><strong>Seguimiento:</strong> Rastrea tu pedido en tiempo real</span></div>
+          </article>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       6. GESTIÓN DE PEDIDOS
+       ============================================================ -->
+  <section id="pedidos" class="screen">
+    <div style="max-width: 1280px; margin: 0 auto;">
+      <h1 class="page-title">
+        <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1" stroke-linecap="round"/><circle cx="20" cy="21" r="1" stroke-linecap="round"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Licorería El Cielo
+      </h1>
+      <p class="page-subtitle">Gestión de Pedidos — Licorería El Cielo (CO)</p>
+
+      <div style="display: grid; grid-template-columns: 1fr 380px; gap: 24px; align-items: start;">
+        <div>
+          <article class="card section-card">
+            <div class="card-header">
+              <div class="card-header-title">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke-linecap="round" stroke-linejoin="round"/><polyline points="14 2 14 8 20 8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Estado del Pedido
+              </div>
+              <span class="badge badge-info">
+                <svg viewBox="0 0 24 24" style="stroke:currentColor; fill:none; stroke-width:2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                En preparación
+              </span>
+            </div>
+            <p style="color:var(--gris-claro); font-size:14px;">Tu pedido será procesado en las próximas horas. Te notificaremos cuando esté en camino.</p>
+          </article>
+
+          <article class="card section-card">
+            <h3 style="font-size:17px; font-weight:700; margin-bottom:14px;">Resumen del Pedido</h3>
+
+            <div class="order-item">
+              <div class="order-item-img"><svg class="bottle-svg" viewBox="0 0 60 160"><use href="#bottle"/></svg></div>
+              <div class="order-item-info">
+                <div class="order-item-name">Whisky Old Parr 12 Años</div>
+                <div class="order-item-price">$ 360.000</div>
+                <div class="order-item-qty">Cantidad: 2</div>
+              </div>
+              <div class="order-item-total">$ 720.000</div>
+            </div>
+
+            <div class="order-item">
+              <div class="order-item-img"><svg class="bottle-svg" viewBox="0 0 60 160"><use href="#bottle"/></svg></div>
+              <div class="order-item-info">
+                <div class="order-item-name">Vino Tinto Casillero del Diablo Reserva</div>
+                <div class="order-item-price">$ 182.000</div>
+                <div class="order-item-qty">Cantidad: 1</div>
+              </div>
+              <div class="order-item-total">$ 182.000</div>
+            </div>
+
+            <div class="order-item">
+              <div class="order-item-img"><svg class="bottle-svg" viewBox="0 0 60 160"><use href="#bottle"/></svg></div>
+              <div class="order-item-info">
+                <div class="order-item-name">Cerveza Artesanal BBC Negra x6</div>
+                <div class="order-item-price">$ 140.000</div>
+                <div class="order-item-qty">Cantidad: 1</div>
+              </div>
+              <div class="order-item-total">$ 140.000</div>
+            </div>
+          </article>
+        </div>
+
+        <aside>
+          <article class="card section-card">
+            <h3 style="font-size:18px; font-weight:700; margin-bottom:18px;">Resumen de Pago</h3>
+            <div class="summary-row"><span class="label">Subtotal:</span><span>$ 1.098.000</span></div>
+            <div class="summary-row"><span class="label">Envío:</span><span>$ 12.000</span></div>
+            <div class="summary-divider"></div>
+            <div class="summary-row" style="font-size:18px; font-weight:700;">
+              <span style="color:var(--dorado-principal);">Total:</span>
+              <span style="color:var(--dorado-principal);">$ 1.110.000</span>
+            </div>
+            <div class="payments-card">
+              <div class="label">Métodos de pago disponibles:</div>
+              <div class="payments-row">
+                <span class="payment-tag">Nequi</span>
+                <span class="payment-tag">PSE</span>
+                <span class="payment-tag">Efectivo</span>
+              </div>
+            </div>
+          </article>
+
+          <button class="btn btn-primary btn-block btn-lg" style="margin-bottom:10px;">
+            <svg viewBox="0 0 24 24" style="width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke-linecap="round" stroke-linejoin="round"/><polyline points="22 4 12 14.01 9 11.01" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Confirmar Pedido
+          </button>
+          <a href="#carrito" class="btn btn-secondary btn-block" style="margin-bottom:18px;">
+            <svg viewBox="0 0 24 24" style="width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2"><line x1="19" y1="12" x2="5" y2="12" stroke-linecap="round"/><polyline points="12 19 5 12 12 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Volver al Carrito
+          </a>
+
+          <article class="card">
+            <div class="feature-row">
+              <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span><strong>Entrega rápida:</strong> 1-2 horas en Bogotá</span>
+            </div>
+            <div class="feature-row">
+              <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 11V7a5 5 0 0110 0v4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span><strong>Compra segura:</strong> Tus datos están protegidos</span>
+            </div>
+            <div class="feature-row">
+              <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span><strong>Seguimiento:</strong> Rastrea tu pedido en tiempo real</span>
+            </div>
+          </article>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       7. MI PERFIL (Cliente)
+       ============================================================ -->
+  <section id="perfil" class="screen">
+    <div style="max-width: 900px; margin: 0 auto;">
+      <h1 class="page-title">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Mi Perfil
+      </h1>
+      <p class="page-subtitle">Administra tus datos personales y preferencias</p>
+
+      <div class="profile-grid">
+        <!-- Tarjeta de avatar -->
+        <div class="profile-card profile-avatar-card">
+          <div class="profile-avatar">
+            <svg viewBox="0 0 24 24" width="48" height="48" style="stroke:currentColor; fill:none; stroke-width:1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3 id="profile-display-name">María Rodríguez</h3>
+          <p id="profile-display-email" style="color: var(--gris-claro); font-size: 13px;">cliente@elcielo.com</p>
+          <div class="profile-stats">
+            <div><strong id="profile-orders-count">3</strong><span>Pedidos</span></div>
+            <div><strong id="profile-favs-count">0</strong><span>Favoritos</span></div>
+          </div>
+        </div>
+
+        <!-- Datos personales -->
+        <div class="profile-card">
+          <h3 style="margin-bottom: 18px;">Datos personales</h3>
+          <form id="profile-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Nombres</label>
+                <input type="text" class="form-input" id="profile-nombres" value="María">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Apellidos</label>
+                <input type="text" class="form-input" id="profile-apellidos" value="Rodríguez">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Correo electrónico</label>
+              <input type="email" class="form-input" id="profile-email" value="cliente@elcielo.com">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Teléfono</label>
+                <input type="tel" class="form-input" id="profile-telefono" value="+57 300 123 4567">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Cédula</label>
+                <input type="text" class="form-input" id="profile-cedula" value="1234567890">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Dirección de envío</label>
+              <input type="text" class="form-input" id="profile-direccion" value="Calle 123 # 45-67, Bogotá">
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+          </form>
+        </div>
+
+        <!-- Cambiar contraseña -->
+        <div class="profile-card">
+          <h3 style="margin-bottom: 18px;">Seguridad</h3>
+          <form id="password-form">
+            <div class="form-group">
+              <label class="form-label">Contraseña actual</label>
+              <input type="password" class="form-input" id="password-actual" placeholder="••••••••">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Nueva contraseña</label>
+              <input type="password" class="form-input" id="password-nueva" placeholder="••••••••">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Confirmar nueva contraseña</label>
+              <input type="password" class="form-input" id="password-confirmar" placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn btn-secondary">Cambiar contraseña</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       8. FAVORITOS (Cliente)
+       ============================================================ -->
+  <section id="favoritos" class="screen">
+    <div style="max-width: 1280px; margin: 0 auto;">
+      <h1 class="page-title">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Mis Favoritos
+      </h1>
+      <p class="page-subtitle">Productos que has guardado para más tarde</p>
+
+      <!-- Estado vacío -->
+      <div id="favoritos-empty" class="empty-state">
+        <svg viewBox="0 0 24 24" width="64" height="64" style="stroke:var(--gris-tenue); fill:none; stroke-width:1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h3>Aún no tienes favoritos</h3>
+        <p>Marca productos con el corazón en el catálogo para guardarlos aquí.</p>
+        <button class="btn btn-primary" data-nav="catalogo">Ir al catálogo</button>
+      </div>
+
+      <!-- Grid de favoritos (se llena dinámicamente) -->
+      <div id="favoritos-grid" class="product-grid" style="display: none;"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       9. PROMOCIONES (Cliente)
+       ============================================================ -->
+  <section id="promociones" class="screen">
+    <div style="max-width: 1280px; margin: 0 auto;">
+      <h1 class="page-title">
+        <svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" stroke-linecap="round" stroke-linejoin="round"/><line x1="7" y1="7" x2="7.01" y2="7" stroke-linecap="round"/></svg>
+        Ofertas y Promociones
+      </h1>
+      <p class="page-subtitle">Aprovecha nuestros descuentos por tiempo limitado</p>
+
+      <!-- Banner principal -->
+      <div class="promo-banner">
+        <div>
+          <span class="promo-tag-big">¡OFERTA ESPECIAL!</span>
+          <h2>2x1 en Vinos Tintos</h2>
+          <p>Llévate dos botellas de vino tinto reserva por el precio de una. Solo este fin de semana.</p>
+          <button class="btn btn-primary" data-nav="catalogo">Ver productos</button>
+        </div>
+        <div class="promo-banner-icon">
+          <svg viewBox="0 0 60 160" width="120"><use href="#bottle"/></svg>
+        </div>
+      </div>
+
+      <!-- Grid de promociones -->
+      <div class="promo-grid">
+        <article class="promo-card">
+          <div class="promo-discount">-30%</div>
+          <div class="promo-image">
+            <svg class="bottle-svg" viewBox="0 0 60 160"><use href="#bottle"/></svg>
+          </div>
+          <h3>Whisky Premium 12 años</h3>
+          <div class="promo-prices">
+            <span class="promo-old-price">$ 360.000</span>
+            <span class="promo-new-price">$ 252.000</span>
+          </div>
+          <p class="promo-validity">Válido hasta el 15 de mayo</p>
+          <button class="btn btn-primary btn-block">Agregar al carrito</button>
+        </article>
+
+        <article class="promo-card">
+          <div class="promo-discount">2x1</div>
+          <div class="promo-image">
+            <svg class="bottle-svg" viewBox="0 0 60 160"><use href="#bottle"/></svg>
+          </div>
+          <h3>Vino Tinto Reserva</h3>
+          <div class="promo-prices">
+            <span class="promo-old-price">$ 182.000</span>
+            <span class="promo-new-price">$ 182.000 x2</span>
+          </div>
+          <p class="promo-validity">Solo este fin de semana</p>
+          <button class="btn btn-primary btn-block">Agregar al carrito</button>
+        </article>
+
+        <article class="promo-card">
+          <div class="promo-discount">-20%</div>
+          <div class="promo-image">
+            <svg class="bottle-svg" viewBox="0 0 60 160"><use href="#bottle"/></svg>
+          </div>
+          <h3>Vodka Importado</h3>
+          <div class="promo-prices">
+            <span class="promo-old-price">$ 140.000</span>
+            <span class="promo-new-price">$ 112.000</span>
+          </div>
+          <p class="promo-validity">Válido hasta el 30 de mayo</p>
+          <button class="btn btn-primary btn-block">Agregar al carrito</button>
+        </article>
+
+        <article class="promo-card">
+          <div class="promo-discount">-15%</div>
+          <div class="promo-image">
+            <svg class="bottle-svg" viewBox="0 0 60 160"><use href="#bottle"/></svg>
+          </div>
+          <h3>Combo Tequila + Limones</h3>
+          <div class="promo-prices">
+            <span class="promo-old-price">$ 236.000</span>
+            <span class="promo-new-price">$ 200.000</span>
+          </div>
+          <p class="promo-validity">Mientras dure el inventario</p>
+          <button class="btn btn-primary btn-block">Agregar al carrito</button>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       10. DETALLE DE PRODUCTO (Cliente)
+       ============================================================ -->
+  <section id="detalle-producto" class="screen">
+    <div style="max-width: 1100px; margin: 0 auto;">
+      <button class="btn btn-secondary" data-nav="catalogo" style="margin-bottom: 20px;">
+        <svg viewBox="0 0 24 24" width="16" height="16" style="stroke:currentColor; fill:none; stroke-width:2; vertical-align:middle; margin-right:6px;"><line x1="19" y1="12" x2="5" y2="12" stroke-linecap="round"/><polyline points="12 19 5 12 12 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Volver al catálogo
+      </button>
+
+      <div class="product-detail-grid">
+        <!-- Imagen grande -->
+        <div class="product-detail-image">
+          <span class="product-tag right" id="detail-tag">Whisky</span>
+          <svg class="bottle-svg" viewBox="0 0 60 160" style="width: 200px; height: auto;"><use href="#bottle"/></svg>
+        </div>
+
+        <!-- Info -->
+        <div class="product-detail-info">
+          <h1 id="detail-name">Whisky Premium</h1>
+          <div class="product-detail-rating">
+            <span class="stars" id="detail-stars">★★★★★</span>
+            <span id="detail-rating-text">4.8 (124 reseñas)</span>
+          </div>
+          <p class="product-detail-desc" id="detail-desc">
+            Whisky escocés añejado 12 años, con notas ahumadas y especiadas. Una experiencia sofisticada para los amantes del buen whisky.
+          </p>
+          <div class="product-detail-price-block">
+            <span class="label">Precio</span>
+            <div class="product-detail-price" id="detail-price">$ 360.000</div>
+          </div>
+
+          <div class="product-detail-meta">
+            <div><span>Marca</span><strong>El Cielo Selection</strong></div>
+            <div><span>Volumen</span><strong>750 ml</strong></div>
+            <div><span>Graduación</span><strong>40%</strong></div>
+            <div><span>Origen</span><strong>Escocia</strong></div>
+          </div>
+
+          <div class="product-detail-actions">
+            <button class="btn btn-primary btn-block btn-lg btn-add-detail">
+              <svg viewBox="0 0 24 24" width="18" height="18" style="stroke:currentColor; fill:none; stroke-width:2; vertical-align:middle; margin-right:8px;"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+              Agregar al carrito
+            </button>
+            <button class="btn btn-secondary btn-fav-detail" id="detail-fav-btn">
+              <svg viewBox="0 0 24 24" width="18" height="18" style="stroke:currentColor; fill:none; stroke-width:2; vertical-align:middle; margin-right:6px;"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span id="detail-fav-text">Agregar a favoritos</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reseñas -->
+      <div class="reviews-section">
+        <h2 style="margin-bottom: 18px;">Reseñas de clientes</h2>
+
+        <!-- Resumen -->
+        <div class="reviews-summary">
+          <div class="reviews-rating-big">
+            <strong>4.8</strong>
+            <span class="stars">★★★★★</span>
+            <span style="color: var(--gris-claro); font-size: 13px;">Basado en 124 reseñas</span>
+          </div>
+          <div class="reviews-bars">
+            <div class="review-bar"><span>5★</span><div class="bar"><div style="width:78%"></div></div><span>97</span></div>
+            <div class="review-bar"><span>4★</span><div class="bar"><div style="width:15%"></div></div><span>19</span></div>
+            <div class="review-bar"><span>3★</span><div class="bar"><div style="width:5%"></div></div><span>6</span></div>
+            <div class="review-bar"><span>2★</span><div class="bar"><div style="width:1%"></div></div><span>1</span></div>
+            <div class="review-bar"><span>1★</span><div class="bar"><div style="width:1%"></div></div><span>1</span></div>
+          </div>
+        </div>
+
+        <!-- Formulario para escribir reseña -->
+        <div class="review-form-card">
+          <h3 style="margin-bottom: 12px;">Escribe tu reseña</h3>
+          <form id="review-form">
+            <div class="form-group">
+              <label class="form-label">Tu calificación</label>
+              <div class="star-rating" id="star-rating">
+                <span data-star="1">☆</span>
+                <span data-star="2">☆</span>
+                <span data-star="3">☆</span>
+                <span data-star="4">☆</span>
+                <span data-star="5">☆</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tu opinión</label>
+              <textarea class="form-input" id="review-text" rows="3" placeholder="Cuéntanos qué te pareció el producto..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Publicar reseña</button>
+          </form>
+        </div>
+
+        <!-- Lista de reseñas -->
+        <div class="reviews-list" id="reviews-list">
+          <article class="review-card">
+            <div class="review-head">
+              <div class="review-avatar">JC</div>
+              <div>
+                <strong>Juan Carlos P.</strong>
+                <span class="stars">★★★★★</span>
+              </div>
+              <span class="review-date">Hace 3 días</span>
+            </div>
+            <p>Excelente whisky, el sabor ahumado es exactamente lo que buscaba. La entrega fue muy rápida y llegó perfectamente empacado.</p>
+          </article>
+          <article class="review-card">
+            <div class="review-head">
+              <div class="review-avatar">AM</div>
+              <div>
+                <strong>Ana M.</strong>
+                <span class="stars">★★★★★</span>
+              </div>
+              <span class="review-date">Hace 1 semana</span>
+            </div>
+            <p>Muy buen producto, aunque el precio es un poco alto. Vale la pena para ocasiones especiales.</p>
+          </article>
+          <article class="review-card">
+            <div class="review-head">
+              <div class="review-avatar">RG</div>
+              <div>
+                <strong>Roberto G.</strong>
+                <span class="stars">★★★★★</span>
+              </div>
+              <span class="review-date">Hace 2 semanas</span>
+            </div>
+            <p>Mi whisky favorito desde hace años. La licorería siempre tiene stock y los precios son competitivos.</p>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       11. INVENTARIO ADMIN
+       ============================================================ -->
+  <section id="inventario" class="screen">
+    <div style="max-width: 1280px; margin: 0 auto;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:28px;">
+        <div>
+          <h1 class="page-title">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="20" x2="12" y2="10" stroke-linecap="round"/><line x1="18" y1="20" x2="18" y2="4" stroke-linecap="round"/><line x1="6" y1="20" x2="6" y2="16" stroke-linecap="round"/></svg>
+            Licorería El Cielo - Admin
+          </h1>
+          <p class="page-subtitle" style="margin-bottom:0;">Inventario — Licorería El Cielo</p>
+        </div>
+        <div style="display:flex; gap:12px; align-items:center;">
+          <button class="btn btn-primary" id="btn-add-product">
+            <svg viewBox="0 0 24 24" width="16" height="16" style="stroke:currentColor; fill:none; stroke-width:2; vertical-align:middle; margin-right:6px;"><line x1="12" y1="5" x2="12" y2="19" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke-linecap="round"/></svg>
+            Agregar producto
+          </button>
+          <div class="user-pill">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Administrador
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card success">
+          <div>
+            <div class="label">Total Productos</div>
+            <div class="value">10</div>
+          </div>
+          <div class="icon">
+            <svg viewBox="0 0 24 24" style="stroke:currentColor"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="stat-card warning">
+          <div>
+            <div class="label">Stock Bajo</div>
+            <div class="value">3</div>
+          </div>
+          <div class="icon">
+            <svg viewBox="0 0 24 24" style="stroke:currentColor"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="9" x2="12" y2="13" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="stat-card danger">
+          <div>
+            <div class="label">Agotados</div>
+            <div class="value">1</div>
+          </div>
+          <div class="icon">
+            <svg viewBox="0 0 24 24" style="stroke:currentColor"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="stat-card income">
+          <div>
+            <div class="label">Valor Total</div>
+            <div class="value">$15.9M</div>
+          </div>
+          <div class="icon">
+            <svg viewBox="0 0 24 24" style="stroke:currentColor"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18" stroke-linecap="round" stroke-linejoin="round"/><polyline points="17 6 23 6 23 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="search-filters">
+        <div>
+          <label class="form-label">Buscar Producto</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-linecap="round"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round"/></svg>
+            <input type="text" class="form-input has-icon" placeholder="Buscar por nombre...">
+          </div>
+        </div>
+        <div>
+          <label class="form-label">Filtrar por Categoría</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <select class="form-input has-icon" style="appearance:none; padding-right:40px; background-image: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%239CA3AF%22 stroke-width=%222%22><polyline points=%226 9 12 15 18 9%22/></svg>'); background-repeat:no-repeat; background-position: right 14px center;">
+              <option>Todas las categorías</option>
+              <option>Whisky</option>
+              <option>Vino</option>
+              <option>Cerveza</option>
+              <option>Vodka</option>
+              <option>Ron</option>
+              <option>Tequila</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="inventory-table">
+        <div class="inventory-header">
+          <h3>Productos en Inventario</h3>
+          <span class="count">10 de 10 productos</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Categoría</th>
+              <th>Stock</th>
+              <th>Estado</th>
+              <th>Precio</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="product-cell"><div class="product-icon-sm"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Whisky Old Parr 12 Años</div></td>
+              <td>Whisky</td>
+              <td>45 unidades</td>
+              <td><span class="badge badge-success"><svg viewBox="0 0 24 24" style="stroke:currentColor; fill:none; stroke-width:2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke-linecap="round" stroke-linejoin="round"/><polyline points="22 4 12 14.01 9 11.01" stroke-linecap="round" stroke-linejoin="round"/></svg>Disponible</span></td>
+              <td class="price-cell">$ 89.900</td>
+              <td class="actions-cell"><button class="btn-edit"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>Editar</button></td>
+            </tr>
+            <tr>
+              <td><div class="product-cell"><div class="product-icon-sm"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Whisky Johnnie Walker Black Label</div></td>
+              <td>Whisky</td>
+              <td><span class="stock-warning">8 unidades</span></td>
+              <td><span class="badge badge-warning"><svg viewBox="0 0 24 24" style="stroke:currentColor; fill:none; stroke-width:2"><circle cx="12" cy="12" r="10" stroke-linecap="round"/><line x1="12" y1="8" x2="12" y2="12" stroke-linecap="round"/><line x1="12" y1="16" x2="12.01" y2="16" stroke-linecap="round"/></svg>Stock Bajo</span></td>
+              <td class="price-cell">$ 250.000</td>
+              <td class="actions-cell"><button class="btn-edit"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>Editar</button></td>
+            </tr>
+            <tr>
+              <td><div class="product-cell"><div class="product-icon-sm"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Vino Tinto Casillero del Diablo Reserva</div></td>
+              <td>Vino</td>
+              <td>32 unidades</td>
+              <td><span class="badge badge-success"><svg viewBox="0 0 24 24" style="stroke:currentColor; fill:none; stroke-width:2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke-linecap="round" stroke-linejoin="round"/><polyline points="22 4 12 14.01 9 11.01" stroke-linecap="round" stroke-linejoin="round"/></svg>Disponible</span></td>
+              <td class="price-cell">$ 42.000</td>
+              <td class="actions-cell"><button class="btn-edit"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>Editar</button></td>
+            </tr>
+            <tr>
+              <td><div class="product-cell"><div class="product-icon-sm"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Vino Blanco Santa Rita 120</div></td>
+              <td>Vino</td>
+              <td><span class="stock-danger">0 unidades</span></td>
+              <td><span class="badge badge-danger"><svg viewBox="0 0 24 24" style="stroke:currentColor; fill:none; stroke-width:2"><circle cx="12" cy="12" r="10" stroke-linecap="round"/><line x1="15" y1="9" x2="9" y2="15" stroke-linecap="round"/><line x1="9" y1="9" x2="15" y2="15" stroke-linecap="round"/></svg>Agotado</span></td>
+              <td class="price-cell">$ 38.000</td>
+              <td class="actions-cell"><button class="btn-edit"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>Editar</button></td>
+            </tr>
+            <tr>
+              <td><div class="product-cell"><div class="product-icon-sm"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Cerveza Artesanal BBC Negra x6</div></td>
+              <td>Cerveza</td>
+              <td>120 unidades</td>
+              <td><span class="badge badge-success"><svg viewBox="0 0 24 24" style="stroke:currentColor; fill:none; stroke-width:2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke-linecap="round" stroke-linejoin="round"/><polyline points="22 4 12 14.01 9 11.01" stroke-linecap="round" stroke-linejoin="round"/></svg>Disponible</span></td>
+              <td class="price-cell">$ 28.500</td>
+              <td class="actions-cell"><button class="btn-edit"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>Editar</button></td>
+            </tr>
+            <tr>
+              <td><div class="product-cell"><div class="product-icon-sm"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Cerveza Corona Extra x12</div></td>
+              <td>Cerveza</td>
+              <td><span class="stock-warning">15 unidades</span></td>
+              <td><span class="badge badge-warning"><svg viewBox="0 0 24 24" style="stroke:currentColor; fill:none; stroke-width:2"><circle cx="12" cy="12" r="10" stroke-linecap="round"/><line x1="12" y1="8" x2="12" y2="12" stroke-linecap="round"/><line x1="12" y1="16" x2="12.01" y2="16" stroke-linecap="round"/></svg>Stock Bajo</span></td>
+              <td class="price-cell">$ 45.000</td>
+              <td class="actions-cell"><button class="btn-edit"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>Editar</button></td>
+            </tr>
+            <tr>
+              <td><div class="product-cell"><div class="product-icon-sm"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Vodka Absolut Original 750ml</div></td>
+              <td>Vodka</td>
+              <td>28 unidades</td>
+              <td><span class="badge badge-success"><svg viewBox="0 0 24 24" style="stroke:currentColor; fill:none; stroke-width:2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke-linecap="round" stroke-linejoin="round"/><polyline points="22 4 12 14.01 9 11.01" stroke-linecap="round" stroke-linejoin="round"/></svg>Disponible</span></td>
+              <td class="price-cell">$ 68.000</td>
+              <td class="actions-cell"><button class="btn-edit"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>Editar</button></td>
+            </tr>
+            <tr>
+              <td><div class="product-cell"><div class="product-icon-sm"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Ron Medellín Añejo 750ml</div></td>
+              <td>Ron</td>
+              <td>52 unidades</td>
+              <td><span class="badge badge-success"><svg viewBox="0 0 24 24" style="stroke:currentColor; fill:none; stroke-width:2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke-linecap="round" stroke-linejoin="round"/><polyline points="22 4 12 14.01 9 11.01" stroke-linecap="round" stroke-linejoin="round"/></svg>Disponible</span></td>
+              <td class="price-cell">$ 45.000</td>
+              <td class="actions-cell"><button class="btn-edit"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>Editar</button></td>
+            </tr>
+            <tr>
+              <td><div class="product-cell"><div class="product-icon-sm"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Aguardiente Antioqueño Sin Azúcar</div></td>
+              <td>Aguardiente</td>
+              <td><span class="stock-warning">5 unidades</span></td>
+              <td><span class="badge badge-warning"><svg viewBox="0 0 24 24" style="stroke:currentColor; fill:none; stroke-width:2"><circle cx="12" cy="12" r="10" stroke-linecap="round"/><line x1="12" y1="8" x2="12" y2="12" stroke-linecap="round"/><line x1="12" y1="16" x2="12.01" y2="16" stroke-linecap="round"/></svg>Stock Bajo</span></td>
+              <td class="price-cell">$ 32.000</td>
+              <td class="actions-cell"><button class="btn-edit"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>Editar</button></td>
+            </tr>
+            <tr>
+              <td><div class="product-cell"><div class="product-icon-sm"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Tequila José Cuervo Especial Gold</div></td>
+              <td>Tequila</td>
+              <td>18 unidades</td>
+              <td><span class="badge badge-success"><svg viewBox="0 0 24 24" style="stroke:currentColor; fill:none; stroke-width:2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke-linecap="round" stroke-linejoin="round"/><polyline points="22 4 12 14.01 9 11.01" stroke-linecap="round" stroke-linejoin="round"/></svg>Disponible</span></td>
+              <td class="price-cell">$ 72.000</td>
+              <td><button class="btn-edit"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>Editar</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="text-align:center; color:var(--gris-claro); margin-top:32px; font-size:13px;">© 2025 Licorería El Cielo. Todos los derechos reservados.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       12. DASHBOARD ADMIN (Estadísticas)
+       ============================================================ -->
+  <section id="dashboard-admin" class="screen">
+    <div style="max-width: 1280px; margin: 0 auto;">
+      <h1 class="page-title">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" stroke-linecap="round" stroke-linejoin="round"/><rect x="14" y="3" width="7" height="5" stroke-linecap="round" stroke-linejoin="round"/><rect x="14" y="12" width="7" height="9" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="16" width="7" height="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Panel de Control
+      </h1>
+      <p class="page-subtitle">Resumen general de la Licorería El Cielo</p>
+
+      <!-- KPIs principales -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon kpi-icon-success">
+            <svg viewBox="0 0 24 24" width="20" height="20" style="stroke:currentColor; fill:none; stroke-width:2"><line x1="12" y1="1" x2="12" y2="23" stroke-linecap="round"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div class="kpi-label">Ventas del día</div>
+            <div class="kpi-value">$ 2.840.000</div>
+            <div class="kpi-trend up">↑ 12% vs ayer</div>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon kpi-icon-info">
+            <svg viewBox="0 0 24 24" width="20" height="20" style="stroke:currentColor; fill:none; stroke-width:2"><path d="M9 11l3 3L22 4" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div class="kpi-label">Pedidos hoy</div>
+            <div class="kpi-value">37</div>
+            <div class="kpi-trend up">↑ 5 vs ayer</div>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon kpi-icon-warning">
+            <svg viewBox="0 0 24 24" width="20" height="20" style="stroke:currentColor; fill:none; stroke-width:2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="9" x2="12" y2="13" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <div class="kpi-label">Stock bajo</div>
+            <div class="kpi-value">8</div>
+            <div class="kpi-trend down">productos críticos</div>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon kpi-icon-primary">
+            <svg viewBox="0 0 24 24" width="20" height="20" style="stroke:currentColor; fill:none; stroke-width:2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div class="kpi-label">Clientes activos</div>
+            <div class="kpi-value">128</div>
+            <div class="kpi-trend up">↑ 8 nuevos esta semana</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gráficas y tablas -->
+      <div class="dashboard-grid-2">
+        <!-- Gráfico de ventas semanales (barras simples) -->
+        <div class="dashboard-card">
+          <div class="dashboard-card-head">
+            <h3>Ventas de la semana</h3>
+            <span class="dashboard-card-badge">Últimos 7 días</span>
+          </div>
+          <div class="bar-chart" id="bar-chart">
+            <div class="bar-row"><span class="bar-label">Lun</span><div class="bar-track"><div class="bar-fill" style="width:55%"></div></div><span class="bar-value">$ 1.8M</span></div>
+            <div class="bar-row"><span class="bar-label">Mar</span><div class="bar-track"><div class="bar-fill" style="width:42%"></div></div><span class="bar-value">$ 1.4M</span></div>
+            <div class="bar-row"><span class="bar-label">Mié</span><div class="bar-track"><div class="bar-fill" style="width:68%"></div></div><span class="bar-value">$ 2.2M</span></div>
+            <div class="bar-row"><span class="bar-label">Jue</span><div class="bar-track"><div class="bar-fill" style="width:75%"></div></div><span class="bar-value">$ 2.5M</span></div>
+            <div class="bar-row"><span class="bar-label">Vie</span><div class="bar-track"><div class="bar-fill" style="width:92%"></div></div><span class="bar-value">$ 3.1M</span></div>
+            <div class="bar-row"><span class="bar-label">Sáb</span><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><span class="bar-value">$ 3.4M</span></div>
+            <div class="bar-row"><span class="bar-label">Dom</span><div class="bar-track"><div class="bar-fill" style="width:85%"></div></div><span class="bar-value">$ 2.8M</span></div>
+          </div>
+        </div>
+
+        <!-- Top productos vendidos -->
+        <div class="dashboard-card">
+          <div class="dashboard-card-head">
+            <h3>Productos más vendidos</h3>
+            <span class="dashboard-card-badge">Este mes</span>
+          </div>
+          <ul class="top-list">
+            <li><span class="top-rank">1</span><span class="top-name">Whisky Premium</span><span class="top-value">142 ventas</span></li>
+            <li><span class="top-rank">2</span><span class="top-name">Vino Tinto Reserva</span><span class="top-value">98 ventas</span></li>
+            <li><span class="top-rank">3</span><span class="top-name">Champagne Brut</span><span class="top-value">76 ventas</span></li>
+            <li><span class="top-rank">4</span><span class="top-name">Ron Añejo</span><span class="top-value">64 ventas</span></li>
+            <li><span class="top-rank">5</span><span class="top-name">Tequila Reposado</span><span class="top-value">52 ventas</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Alertas y actividad reciente -->
+      <div class="dashboard-grid-2" style="margin-top: 20px;">
+        <div class="dashboard-card">
+          <div class="dashboard-card-head">
+            <h3>Alertas de stock</h3>
+            <span class="dashboard-card-badge danger">Requiere atención</span>
+          </div>
+          <ul class="alert-list">
+            <li class="alert-item alert-danger">
+              <strong>Vino Blanco Santa Rita 120</strong>
+              <span>0 unidades — Agotado</span>
+            </li>
+            <li class="alert-item alert-warning">
+              <strong>Aguardiente Antioqueño</strong>
+              <span>5 unidades — Stock crítico</span>
+            </li>
+            <li class="alert-item alert-warning">
+              <strong>Whisky Johnnie Walker</strong>
+              <span>8 unidades — Stock bajo</span>
+            </li>
+            <li class="alert-item alert-warning">
+              <strong>Cerveza Corona x12</strong>
+              <span>15 unidades — Stock bajo</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="dashboard-card">
+          <div class="dashboard-card-head">
+            <h3>Actividad reciente</h3>
+            <span class="dashboard-card-badge">En vivo</span>
+          </div>
+          <ul class="activity-list">
+            <li><span class="activity-time">10:42</span><span>Nuevo pedido #1247 de Juan C.</span></li>
+            <li><span class="activity-time">10:28</span><span>Pago confirmado — Pedido #1246</span></li>
+            <li><span class="activity-time">10:15</span><span>Reseña 5★ en Whisky Premium</span></li>
+            <li><span class="activity-time">09:52</span><span>Nuevo cliente registrado: Ana R.</span></li>
+            <li><span class="activity-time">09:30</span><span>Stock actualizado: +20 Vino Tinto</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       13. GESTIÓN DE USUARIOS
+       ============================================================ -->
+  <section id="usuarios" class="screen">
+    <div style="max-width: 1280px; margin: 0 auto;">
+      <h1 class="page-title">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Gestión de Usuarios
+      </h1>
+      <p class="page-subtitle">Administra los clientes registrados en el sistema</p>
+
+      <!-- Filtros -->
+      <div class="admin-filters">
+        <div class="search-input-wrap" style="flex: 1; max-width: 400px;">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-linecap="round"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round"/></svg>
+          <input type="text" id="users-search" placeholder="Buscar por nombre, correo o cédula...">
+        </div>
+        <select class="form-input" id="users-filter" style="max-width: 180px;">
+          <option value="todos">Todos</option>
+          <option value="activo">Activos</option>
+          <option value="suspendido">Suspendidos</option>
+        </select>
+        <button class="btn btn-primary">+ Nuevo usuario</button>
+      </div>
+
+      <!-- Tabla de usuarios -->
+      <div class="table-wrap">
+        <table class="data-table" id="users-table">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Correo</th>
+              <th>Cédula</th>
+              <th>Pedidos</th>
+              <th>Total comprado</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody">
+            <!-- Datos iniciales (el JS los reemplaza al cargar) -->
+            <tr data-user-id="1">
+              <td><strong>María Rodríguez</strong></td>
+              <td>maria.r@email.com</td>
+              <td>1234567890</td>
+              <td>12</td>
+              <td>$ 4.280.000</td>
+              <td><span class="status-badge status-active">Activo</span></td>
+              <td><div class="table-actions"><button class="btn-icon-sm" data-action="ver" data-id="1">Ver</button><button class="btn-icon-sm" data-action="toggle" data-id="1">Suspender</button></div></td>
+            </tr>
+            <tr data-user-id="2">
+              <td><strong>Juan Carlos Pérez</strong></td>
+              <td>juancarlos@email.com</td>
+              <td>1098765432</td>
+              <td>8</td>
+              <td>$ 2.150.000</td>
+              <td><span class="status-badge status-active">Activo</span></td>
+              <td><div class="table-actions"><button class="btn-icon-sm" data-action="ver" data-id="2">Ver</button><button class="btn-icon-sm" data-action="toggle" data-id="2">Suspender</button></div></td>
+            </tr>
+            <tr data-user-id="3">
+              <td><strong>Ana Gómez</strong></td>
+              <td>ana.gomez@email.com</td>
+              <td>1122334455</td>
+              <td>25</td>
+              <td>$ 8.920.000</td>
+              <td><span class="status-badge status-suspended">Suspendido</span></td>
+              <td><div class="table-actions"><button class="btn-icon-sm" data-action="ver" data-id="3">Ver</button><button class="btn-icon-sm" data-action="toggle" data-id="3">Reactivar</button></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       14. GESTIÓN DE PROMOCIONES (admin)
+       ============================================================ -->
+  <section id="admin-promociones" class="screen">
+    <div style="max-width: 1280px; margin: 0 auto;">
+      <h1 class="page-title">
+        <svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" stroke-linecap="round" stroke-linejoin="round"/><line x1="7" y1="7" x2="7.01" y2="7" stroke-linecap="round"/></svg>
+        Gestión de Promociones
+      </h1>
+      <p class="page-subtitle">Crea y administra las ofertas activas del sistema</p>
+
+      <div class="dashboard-grid-2" style="margin-top: 24px;">
+        <!-- Formulario para crear promoción -->
+        <div class="dashboard-card">
+          <h3 style="margin-bottom: 18px;">Nueva promoción</h3>
+          <form id="promo-form">
+            <div class="form-group">
+              <label class="form-label">Nombre de la promoción</label>
+              <input type="text" class="form-input" id="promo-nombre" placeholder="Ej: 2x1 en vinos tintos">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Producto</label>
+              <select class="form-input" id="promo-producto">
+                <option value="">Seleccionar producto</option>
+                <option value="1">Whisky Premium</option>
+                <option value="2">Vino Tinto Reserva</option>
+                <option value="3">Vodka Importado</option>
+                <option value="4">Ron Añejo</option>
+                <option value="5">Tequila Reposado</option>
+                <option value="6">Champagne Brut</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Tipo</label>
+                <select class="form-input" id="promo-tipo">
+                  <option value="descuento">% Descuento</option>
+                  <option value="2x1">2x1</option>
+                  <option value="combo">Combo</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Valor (%)</label>
+                <input type="number" class="form-input" id="promo-valor" placeholder="20" min="0" max="100">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Fecha inicio</label>
+                <input type="date" class="form-input" id="promo-inicio">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Fecha fin</label>
+                <input type="date" class="form-input" id="promo-fin">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Crear promoción</button>
+          </form>
+        </div>
+
+        <!-- Lista de promociones -->
+        <div class="dashboard-card">
+          <div class="dashboard-card-head">
+            <h3>Promociones activas</h3>
+            <span class="dashboard-card-badge" id="promo-count">4 activas</span>
+          </div>
+          <ul class="promo-admin-list" id="promo-admin-list">
+            <!-- Datos iniciales (el JS los reemplaza al cargar) -->
+            <li class="promo-admin-item">
+              <div>
+                <strong>Whisky Premium 12 años -30%</strong>
+                <span>Whisky Premium · 30% off · hasta 2026-05-15</span>
+              </div>
+              <div class="promo-admin-actions">
+                <button class="btn-icon-sm" data-promo-action="editar" data-id="1">Editar</button>
+                <button class="btn-icon-sm danger" data-promo-action="eliminar" data-id="1">Eliminar</button>
+              </div>
+            </li>
+            <li class="promo-admin-item">
+              <div>
+                <strong>2x1 en Vinos Tintos</strong>
+                <span>Vino Tinto Reserva · 2x1 · hasta 2026-05-08</span>
+              </div>
+              <div class="promo-admin-actions">
+                <button class="btn-icon-sm" data-promo-action="editar" data-id="2">Editar</button>
+                <button class="btn-icon-sm danger" data-promo-action="eliminar" data-id="2">Eliminar</button>
+              </div>
+            </li>
+            <li class="promo-admin-item">
+              <div>
+                <strong>Vodka Importado -20%</strong>
+                <span>Vodka Importado · 20% off · hasta 2026-05-30</span>
+              </div>
+              <div class="promo-admin-actions">
+                <button class="btn-icon-sm" data-promo-action="editar" data-id="3">Editar</button>
+                <button class="btn-icon-sm danger" data-promo-action="eliminar" data-id="3">Eliminar</button>
+              </div>
+            </li>
+            <li class="promo-admin-item">
+              <div>
+                <strong>Combo Tequila + Limones -15%</strong>
+                <span>Tequila Reposado · combo · hasta 2026-06-01</span>
+              </div>
+              <div class="promo-admin-actions">
+                <button class="btn-icon-sm" data-promo-action="editar" data-id="4">Editar</button>
+                <button class="btn-icon-sm danger" data-promo-action="eliminar" data-id="4">Eliminar</button>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       16. REPORTES Y EXPORTACIÓN
+       ============================================================ -->
+  <section id="reportes" class="screen">
+    <div style="max-width: 1280px; margin: 0 auto;">
+      <h1 class="page-title">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke-linecap="round" stroke-linejoin="round"/><polyline points="14 2 14 8 20 8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Reportes
+      </h1>
+      <p class="page-subtitle">Genera y exporta reportes del sistema</p>
+
+      <!-- Filtros de rango de fechas -->
+      <div class="dashboard-card" style="margin-top: 24px;">
+        <h3 style="margin-bottom: 18px;">Generar reporte</h3>
+        <div class="form-row" style="grid-template-columns: 1fr 1fr 1fr;">
+          <div class="form-group">
+            <label class="form-label">Tipo de reporte</label>
+            <select class="form-input" id="report-tipo">
+              <option value="ventas">Ventas</option>
+              <option value="inventario">Inventario</option>
+              <option value="pedidos">Pedidos</option>
+              <option value="clientes">Clientes</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Fecha inicio</label>
+            <input type="date" class="form-input" id="report-inicio">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Fecha fin</label>
+            <input type="date" class="form-input" id="report-fin">
+          </div>
+        </div>
+        <div style="display:flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn btn-primary" id="btn-report-pdf">
+            <svg viewBox="0 0 24 24" width="16" height="16" style="stroke:currentColor; fill:none; stroke-width:2; vertical-align:middle; margin-right:6px;"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke-linecap="round" stroke-linejoin="round"/><polyline points="14 2 14 8 20 8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Exportar a PDF
+          </button>
+          <button class="btn btn-secondary" id="btn-report-excel">
+            <svg viewBox="0 0 24 24" width="16" height="16" style="stroke:currentColor; fill:none; stroke-width:2; vertical-align:middle; margin-right:6px;"><rect x="3" y="3" width="18" height="18" rx="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="9" y1="9" x2="15" y2="15" stroke-linecap="round"/><line x1="15" y1="9" x2="9" y2="15" stroke-linecap="round"/></svg>
+            Exportar a Excel
+          </button>
+          <button class="btn btn-secondary" id="btn-report-csv">CSV</button>
+        </div>
+      </div>
+
+      <!-- Reportes recientes -->
+      <div class="dashboard-card" style="margin-top: 20px;">
+        <h3 style="margin-bottom: 18px;">Reportes generados recientemente</h3>
+        <ul class="reports-list" id="reports-list">
+          <li><span>Reporte de ventas — Abril 2026</span><span class="report-meta">PDF · 2.4 MB · 28/04/2026</span><button class="btn-link">Descargar</button></li>
+          <li><span>Inventario completo</span><span class="report-meta">Excel · 0.8 MB · 25/04/2026</span><button class="btn-link">Descargar</button></li>
+          <li><span>Pedidos del mes</span><span class="report-meta">PDF · 1.6 MB · 20/04/2026</span><button class="btn-link">Descargar</button></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+
+
+</main>
+
+<!-- ============================================================
+     MODALES DE ERROR
+     Solo aparecen cuando se llaman desde JavaScript.
+     Por defecto están ocultos.
+     ============================================================ -->
+
+<!-- MODAL: Agregar producto al inventario -->
+<div class="modal-overlay" id="modal-add-product" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal-card" style="max-width: 520px; text-align: left;">
+    <button class="modal-close" data-close-modal aria-label="Cerrar">×</button>
+    <h2 style="margin-bottom: 8px;">Agregar nuevo producto</h2>
+    <p style="color: var(--gris-claro); margin-bottom: 20px;">Completa los datos para añadirlo al inventario</p>
+    <form id="add-product-form">
+      <div class="form-group">
+        <label class="form-label">Nombre del producto</label>
+        <input type="text" class="form-input" id="new-prod-nombre" placeholder="Ej: Whisky Buchanan's 18 años" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Categoría</label>
+          <select class="form-input" id="new-prod-categoria" required>
+            <option value="">Seleccionar...</option>
+            <option>Whisky</option>
+            <option>Vino</option>
+            <option>Vodka</option>
+            <option>Ron</option>
+            <option>Tequila</option>
+            <option>Champagne</option>
+            <option>Cerveza</option>
+            <option>Aguardiente</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Stock (unidades)</label>
+          <input type="number" class="form-input" id="new-prod-stock" placeholder="50" min="0" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Precio (COP)</label>
+        <input type="number" class="form-input" id="new-prod-precio" placeholder="150000" min="0" required>
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button type="submit" class="btn btn-primary" style="flex: 1;">Guardar producto</button>
+        <button type="button" class="btn btn-secondary" data-close-modal>Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL: Credenciales incorrectas -->
+<div class="modal-overlay" id="modal-credenciales" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal-card">
+    <button class="modal-close" data-close-modal aria-label="Cerrar">×</button>
+    <div class="logo-icon"><svg viewBox="0 0 24 24"><use href="#bag"/></svg></div>
+    <div class="state-icon danger">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-linecap="round" stroke-linejoin="round"/><line x1="15" y1="9" x2="9" y2="15" stroke-linecap="round" stroke-linejoin="round"/><line x1="9" y1="9" x2="15" y2="15" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h2>Usuario o contraseña incorrectos</h2>
+    <p>Los datos ingresados no coinciden con nuestros registros. Por favor, verifica tu información e intenta nuevamente.</p>
+    <div class="state-actions">
+      <button class="btn btn-primary btn-block btn-lg" data-close-modal>Intentar de nuevo</button>
+      <button class="btn btn-secondary btn-block" data-nav="registro" data-close-modal>Crear cuenta nueva</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Formato de correo inválido -->
+<div class="modal-overlay" id="modal-correo" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal-card">
+    <button class="modal-close" data-close-modal aria-label="Cerrar">×</button>
+    <div class="logo-icon"><svg viewBox="0 0 24 24"><use href="#bag"/></svg></div>
+    <div class="state-icon warning">
+      <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="9" x2="12" y2="13" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="17" x2="12.01" y2="17" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h2>Formato de correo inválido</h2>
+    <p>El correo electrónico ingresado no tiene un formato válido. Asegúrate de incluir el símbolo @ y un dominio correcto.</p>
+    <div class="state-actions">
+      <button class="btn btn-primary btn-block btn-lg" data-close-modal>Intentar de nuevo</button>
+      <button class="btn btn-secondary btn-block" data-close-modal>Volver</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Campos obligatorios incompletos -->
+<div class="modal-overlay" id="modal-campos" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal-card">
+    <button class="modal-close" data-close-modal aria-label="Cerrar">×</button>
+    <div class="logo-icon"><svg viewBox="0 0 24 24"><use href="#bag"/></svg></div>
+    <div class="state-icon info">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="8" x2="12" y2="12" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="16" x2="12.01" y2="16" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h2>Campos obligatorios incompletos</h2>
+    <p>Para continuar, es necesario completar todos los campos marcados como obligatorios en el formulario.</p>
+    <div class="state-actions">
+      <button class="btn btn-primary btn-block btn-lg" data-close-modal>Intentar de nuevo</button>
+      <button class="btn btn-secondary btn-block" data-close-modal>Volver</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Acceso denegado -->
+<div class="modal-overlay" id="modal-acceso" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal-card">
+    <button class="modal-close" data-close-modal aria-label="Cerrar">×</button>
+    <div class="logo-icon"><svg viewBox="0 0 24 24"><use href="#bag"/></svg></div>
+    <div class="state-icon danger">
+      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="8" x2="12" y2="12" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="16" x2="12.01" y2="16" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h2>Acceso denegado</h2>
+    <p>No tienes los permisos necesarios para realizar esta acción. Si crees que esto es un error, contacta al administrador del sistema.</p>
+    <div class="state-actions">
+      <button class="btn btn-primary btn-block btn-lg" data-close-modal>Volver al inicio</button>
+      <button class="btn btn-secondary btn-block" data-close-modal>Solicitar acceso</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

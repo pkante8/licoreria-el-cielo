@@ -22,9 +22,26 @@ licoreria-el-cielo-java/
 │       │   └── ProductoDao.java         → Operaciones CRUD con JDBC
 │       └── vista/
 │           └── MenuProductos.java       → Menú principal por consola
+├── web/                            → Prototipo de interfaz web (frontend)
+│   ├── index.html                  → SPA: login, catálogo, carrito, admin…
+│   ├── styles.css                  → Estilos
+│   └── script.js                   → Lógica del cliente (navegación, validaciones)
 ├── .vscode/                        → Configuración del proyecto para VS Code
 └── README.md
 ```
+
+## Interfaz web (prototipo)
+
+La carpeta `web/` contiene un **prototipo de interfaz** (HTML + CSS + JavaScript)
+que muestra cómo se vería el sistema completo: login por rol (cliente/admin),
+catálogo, carrito, checkout, favoritos, promociones, panel de administración,
+inventario, usuarios y reportes.
+
+> Es una maqueta funcional en el navegador con **datos de ejemplo**; aún no está
+> conectada al backend Java/MySQL. Para probarla, abre `web/index.html` en el navegador.
+>
+> Credenciales de prueba — Cliente: `cliente@elcielo.com` / `123456` ·
+> Admin: `admin@elcielo.com` / `admin123`.
 
 ## Arquitectura
 
