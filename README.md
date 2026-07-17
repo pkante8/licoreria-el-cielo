@@ -1,9 +1,8 @@
-# Licorería El Cielo - Módulo de Productos (Java + JDBC)
+# Licorería El Cielo
 
-Módulo de gestión del inventario de productos de la Licorería El Cielo, desarrollado en Java con conexión a base de datos MySQL por medio de JDBC.
+Sistema de gestión para la Licorería El Cielo, desarrollado en **Java** con conexión a base de datos **MySQL** mediante **JDBC**. El proyecto sigue una arquitectura por capas (modelo, DAO, vista) y aplica buenas prácticas de programación orientada a objetos.
 
-**Evidencia:** GA7-220501096-AA2-EV01. Codificación de módulos del software.
-**Programa:** Análisis y Desarrollo de Software (ADSO) - SENA.
+Actualmente incluye el **módulo de gestión de productos** (inventario), pensado para crecer con nuevos módulos (ventas, clientes, reportes, etc.).
 
 ## Estructura del proyecto
 
@@ -12,7 +11,7 @@ licoreria-el-cielo-java/
 ├── database/
 │   └── licoreria_el_cielo.sql      → Script de creación de la base de datos
 ├── lib/
-│   └── (mysql-connector-j.jar)     → Driver JDBC de MySQL
+│   └── mysql-connector-j-9.7.0.jar → Driver JDBC de MySQL (MySQL Connector/J)
 ├── src/
 │   └── com/licoreriaelcielo/
 │       ├── conexion/
@@ -23,10 +22,18 @@ licoreria-el-cielo-java/
 │       │   └── ProductoDao.java         → Operaciones CRUD con JDBC
 │       └── vista/
 │           └── MenuProductos.java       → Menú principal por consola
+├── .vscode/                        → Configuración del proyecto para VS Code
 └── README.md
 ```
 
-## Estándares de codificación aplicados
+## Arquitectura
+
+- **modelo** — clases de dominio (entidades) con encapsulamiento y métodos get/set.
+- **dao** — acceso a datos: operaciones CRUD sobre la base de datos vía JDBC.
+- **conexion** — gestión centralizada de la conexión a MySQL.
+- **vista** — interfaz de usuario por consola.
+
+## Estándares de codificación
 
 - **Paquetes:** minúsculas (`com.licoreriaelcielo.modelo`).
 - **Clases:** PascalCase (`Producto`, `ProductoDao`, `ConexionBaseDatos`).
@@ -34,43 +41,40 @@ licoreria-el-cielo-java/
 - **Variables:** camelCase descriptivo (`nombreProducto`, `filasAfectadas`).
 - **Constantes:** MAYÚSCULAS con guion bajo (`OPCION_SALIR`, `URL`).
 - Encapsulamiento con atributos `private` y métodos get/set.
-- Sentencias preparadas (`PreparedStatement`) para evitar inyección SQL.
+- Sentencias preparadas (`PreparedStatement`) para prevenir inyección SQL.
 
 ## Requisitos
 
 1. **JDK 17 o superior** (probado con JDK 21).
 2. **MySQL Server** (se puede usar XAMPP con phpMyAdmin).
-3. **Driver JDBC de MySQL** (MySQL Connector/J): descargarlo desde
-   https://dev.mysql.com/downloads/connector/j/ y guardar el archivo `.jar`
-   en la carpeta `lib/`.
+3. **Driver JDBC de MySQL** (MySQL Connector/J) — ya incluido en `lib/`.
 
-## Pasos para ejecutar
+## Configuración
 
-1. **Crear la base de datos:** abrir MySQL (o phpMyAdmin) y ejecutar el script
-   `database/licoreria_el_cielo.sql`. Esto crea la base de datos, la tabla
-   `productos` y carga los 6 productos iniciales del catálogo.
+1. **Crear la base de datos:** ejecutar el script `database/licoreria_el_cielo.sql`
+   en MySQL (o phpMyAdmin). Crea la base de datos, la tabla `productos` y carga
+   el catálogo inicial.
 
 2. **Configurar la conexión:** si el usuario o la contraseña de MySQL son
-   diferentes, cambiarlos en la clase
-   `src/com/licoreriaelcielo/conexion/ConexionBaseDatos.java`
+   distintos, ajustarlos en `src/com/licoreriaelcielo/conexion/ConexionBaseDatos.java`
    (constantes `USUARIO` y `CONTRASENA`).
 
-3. **Compilar** (desde la raíz del proyecto):
+## Compilación y ejecución
 
-   ```
-   javac -d bin src/com/licoreriaelcielo/conexion/*.java src/com/licoreriaelcielo/modelo/*.java src/com/licoreriaelcielo/dao/*.java src/com/licoreriaelcielo/vista/*.java
-   ```
+Desde la raíz del proyecto:
 
-4. **Ejecutar** (Windows usa `;` como separador, Linux/Mac usa `:`):
+```bash
+# Compilar
+javac -cp "lib/*" -d bin src/com/licoreriaelcielo/**/*.java
 
-   ```
-   java -cp "bin;lib/*" com.licoreriaelcielo.vista.MenuProductos
-   ```
+# Ejecutar (Windows usa ; como separador; Linux/Mac usa :)
+java -cp "bin;lib/*" com.licoreriaelcielo.vista.MenuProductos
+```
 
-   En NetBeans o IntelliJ basta con agregar el `.jar` del conector a las
-   librerías del proyecto y ejecutar la clase `MenuProductos`.
+En NetBeans, IntelliJ o VS Code basta con agregar el `.jar` de `lib/` a las
+librerías del proyecto y ejecutar la clase `MenuProductos`.
 
-## Funcionalidades del módulo
+## Funcionalidades (módulo de productos)
 
 1. Listar todos los productos del inventario.
 2. Buscar un producto por su ID.
@@ -78,5 +82,10 @@ licoreria-el-cielo-java/
 4. Actualizar los datos de un producto.
 5. Eliminar un producto (con confirmación).
 
-Todas las operaciones se realizan directamente sobre la base de datos
-MySQL mediante JDBC.
+Todas las operaciones se realizan sobre la base de datos MySQL mediante JDBC.
+
+## Tecnologías
+
+- Java (JDK 17+)
+- MySQL
+- JDBC (MySQL Connector/J)
