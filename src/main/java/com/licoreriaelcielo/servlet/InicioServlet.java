@@ -20,6 +20,12 @@ public class InicioServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/jsp/inicio.jsp").forward(request, response);
+        // Redirigir a la pantalla principal según el rol.
+        Object rol = request.getSession().getAttribute("rol");
+        if ("admin".equals(rol)) {
+            response.sendRedirect(request.getContextPath() + "/inventario");
+        } else {
+            response.sendRedirect(request.getContextPath() + "/catalogo");
+        }
     }
 }
