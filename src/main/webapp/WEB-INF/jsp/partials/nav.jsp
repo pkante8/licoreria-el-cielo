@@ -28,6 +28,8 @@
         <%-- ====== CLIENTE ====== --%>
         <c:when test="${sessionScope.rol == 'cliente'}">
           <a class="dashboard-tab ${actual == 'catalogo' ? 'active' : ''}" href="${ctx}/catalogo">Catálogo</a>
+          <a class="dashboard-tab ${actual == 'carrito' ? 'active' : ''}" href="${ctx}/carrito">Carrito</a>
+          <a class="dashboard-tab ${actual == 'pedidos' ? 'active' : ''}" href="${ctx}/pedidos">Mis Pedidos</a>
         </c:when>
         <%-- ====== ADMIN ====== --%>
         <c:otherwise>

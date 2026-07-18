@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
 <html lang="es">
@@ -41,6 +42,14 @@
               <div><span>Origen</span><strong>${producto.origen}</strong></div>
               <div><span>Stock disponible</span><strong>${producto.stock} unidades</strong></div>
             </div>
+
+            <c:if test="${sessionScope.rol == 'cliente'}">
+              <form method="post" action="${pageContext.request.contextPath}/carrito" class="product-detail-actions">
+                <input type="hidden" name="accion" value="agregar">
+                <input type="hidden" name="id" value="${producto.idProducto}">
+                <button type="submit" class="btn btn-primary btn-block btn-lg">Agregar al carrito</button>
+              </form>
+            </c:if>
           </div>
         </div>
       </div>
