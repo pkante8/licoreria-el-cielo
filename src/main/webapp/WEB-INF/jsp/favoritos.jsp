@@ -6,34 +6,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Licorería El Cielo - Catálogo</title>
+  <title>Favoritos - Licorería El Cielo</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
 </head>
 <body class="logged-in role-${sessionScope.rol}">
   <jsp:include page="/WEB-INF/jsp/partials/sprite.jsp" />
   <jsp:include page="/WEB-INF/jsp/partials/nav.jsp" />
-
   <c:set var="ctx" value="${pageContext.request.contextPath}" />
+
   <main>
     <section class="screen active">
       <div style="max-width: 1280px; margin: 0 auto;">
-        <div class="catalog-header">
-          <div class="catalog-title">
-            <h2>Catálogo de Productos</h2>
-            <p>Explora nuestra selección de licores premium</p>
-          </div>
-        </div>
+        <h1 class="page-title">Mis Favoritos</h1>
+        <p class="page-subtitle">Productos que has guardado</p>
 
         <c:choose>
-          <c:when test="${empty productos}">
+          <c:when test="${empty favoritos}">
             <div class="empty-state">
-              <h3>No hay productos en el catálogo</h3>
-              <p>Aún no se han registrado productos en la base de datos.</p>
+              <h3>Aún no tienes favoritos</h3>
+              <p>Marca productos con el corazón en el catálogo para guardarlos aquí.</p>
+              <a class="btn btn-primary" href="${ctx}/catalogo">Ir al catálogo</a>
             </div>
           </c:when>
           <c:otherwise>
             <div class="product-grid">
-              <c:forEach var="p" items="${productos}">
+              <c:forEach var="p" items="${favoritos}">
                 <article class="product-card">
                   <a href="${ctx}/producto?id=${p.idProducto}" style="display:block;">
                     <div class="product-image">
@@ -49,20 +46,11 @@
                         <div class="label">Precio</div>
                         <div class="product-price">$ <fmt:formatNumber value="${p.precio}" type="number" maxFractionDigits="0" groupingUsed="true"/></div>
                       </div>
-                      <c:if test="${sessionScope.rol == 'cliente'}">
-                        <div style="display:flex; gap:6px;">
-                          <form method="post" action="${ctx}/favoritos" style="margin:0;">
-                            <input type="hidden" name="id" value="${p.idProducto}">
-                            <input type="hidden" name="volver" value="/catalogo">
-                            <button type="submit" class="btn-icon-sm" title="Favorito">&hearts;</button>
-                          </form>
-                          <form method="post" action="${ctx}/carrito" style="margin:0;">
-                            <input type="hidden" name="accion" value="agregar">
-                            <input type="hidden" name="id" value="${p.idProducto}">
-                            <button type="submit" class="btn-add">Agregar</button>
-                          </form>
-                        </div>
-                      </c:if>
+                      <form method="post" action="${ctx}/favoritos" style="margin:0;">
+                        <input type="hidden" name="id" value="${p.idProducto}">
+                        <input type="hidden" name="volver" value="/favoritos">
+                        <button type="submit" class="btn-icon-sm danger">Quitar</button>
+                      </form>
                     </div>
                   </div>
                 </article>

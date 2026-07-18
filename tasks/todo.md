@@ -80,7 +80,7 @@ Hoy solo existe la tabla `productos`. Se añadirán scripts en `database/`:
 - [x] **Fase 1 — Autenticación:** `Usuario`, `UsuarioDao`, tabla `usuarios`, Login + Registro + Logout + Inicio. ✔ **Verificado end-to-end** contra MySQL (login cliente/admin, rol, credenciales inválidas).
 - [x] **Fase 2 — Productos (núcleo):** Catálogo + Detalle + Inventario CRUD (reusa `ProductoDao`). ✔ **Verificado**: catálogo lista desde BD, detalle, inventario con estadísticas, y CRUD completo (agregar/editar/eliminar) + guard admin. Nav lateral compartido (`nav.jsp`).
 - [x] **Fase 3 — Compra:** Carrito + Checkout + Pedidos. ✔ Verificado: agregar/cantidades, checkout, pedido en BD (transaccion), carrito se vacia.
-- [ ] **Fase 4 — Cliente extra:** Perfil + Favoritos + Promociones.
+- [x] **Fase 4 — Cliente extra:** Perfil + Favoritos + Promociones. ✔ Verificado: perfil persiste, favoritos agregar/quitar, promociones activas desde BD.
 - [ ] **Fase 5 — Admin extra:** Dashboard + Usuarios + Promos admin + Reportes.
 - [ ] **Fase 6 — Verificación final:** correr en Tomcat, probar cada formulario, capturas.
 

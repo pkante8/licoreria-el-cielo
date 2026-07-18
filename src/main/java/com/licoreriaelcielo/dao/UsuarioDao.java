@@ -136,6 +136,80 @@ public class UsuarioDao {
     }
 
     /**
+     * Busca un usuario por su identificador.
+     */
+    public Usuario buscarPorId(int idUsuario) {
+        Usuario usuario = null;
+        String sql = "SELECT * FROM usuarios WHERE id_usuario = ?";
+        Connection conexion = ConexionBaseDatos.obtenerConexion();
+        if (conexion == null) {
+            return null;
+        }
+        try (PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+            sentencia.setInt(1, idUsuario);
+            try (ResultSet rs = sentencia.executeQuery()) {
+                if (rs.next()) {
+                    usuario = convertirFilaEnUsuario(rs);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al buscar el usuario: " + e.getMessage());
+        } finally {
+            ConexionBaseDatos.cerrarConexion(conexion);
+        }
+        return usuario;
+    }
+
+    /**
+     * Actualiza los datos de perfil de un usuario (no cambia rol ni estado).
+     */
+    public boolean actualizarPerfil(Usuario u) {
+        boolean exito = false;
+        String sql = "UPDATE usuarios SET nombres = ?, apellidos = ?, email = ?, "
+                + "telefono = ?, direccion = ?, cedula = ? WHERE id_usuario = ?";
+        Connection conexion = ConexionBaseDatos.obtenerConexion();
+        if (conexion == null) {
+            return false;
+        }
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setString(1, u.getNombres());
+            ps.setString(2, u.getApellidos());
+            ps.setString(3, u.getEmail());
+            ps.setString(4, u.getTelefono());
+            ps.setString(5, u.getDireccion());
+            ps.setString(6, u.getCedula());
+            ps.setInt(7, u.getIdUsuario());
+            exito = ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("Error al actualizar el perfil: " + e.getMessage());
+        } finally {
+            ConexionBaseDatos.cerrarConexion(conexion);
+        }
+        return exito;
+    }
+
+    /**
+     * Cambia el estado de un usuario (activo/suspendido) — módulo admin.
+     */
+    public boolean cambiarEstado(int idUsuario, String nuevoEstado) {
+        String sql = "UPDATE usuarios SET estado = ? WHERE id_usuario = ?";
+        Connection conexion = ConexionBaseDatos.obtenerConexion();
+        if (conexion == null) {
+            return false;
+        }
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setString(1, nuevoEstado);
+            ps.setInt(2, idUsuario);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("Error al cambiar el estado: " + e.getMessage());
+            return false;
+        } finally {
+            ConexionBaseDatos.cerrarConexion(conexion);
+        }
+    }
+
+    /**
      * Convierte una fila del ResultSet en un objeto Usuario.
      */
     private Usuario convertirFilaEnUsuario(ResultSet resultado) throws SQLException {

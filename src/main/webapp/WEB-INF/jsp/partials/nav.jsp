@@ -28,8 +28,11 @@
         <%-- ====== CLIENTE ====== --%>
         <c:when test="${sessionScope.rol == 'cliente'}">
           <a class="dashboard-tab ${actual == 'catalogo' ? 'active' : ''}" href="${ctx}/catalogo">Catálogo</a>
+          <a class="dashboard-tab ${actual == 'promociones' ? 'active' : ''}" href="${ctx}/promociones">Promociones</a>
+          <a class="dashboard-tab ${actual == 'favoritos' ? 'active' : ''}" href="${ctx}/favoritos">Favoritos</a>
           <a class="dashboard-tab ${actual == 'carrito' ? 'active' : ''}" href="${ctx}/carrito">Carrito</a>
           <a class="dashboard-tab ${actual == 'pedidos' ? 'active' : ''}" href="${ctx}/pedidos">Mis Pedidos</a>
+          <a class="dashboard-tab ${actual == 'perfil' ? 'active' : ''}" href="${ctx}/perfil">Mi Perfil</a>
         </c:when>
         <%-- ====== ADMIN ====== --%>
         <c:otherwise>

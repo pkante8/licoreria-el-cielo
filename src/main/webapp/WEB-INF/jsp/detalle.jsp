@@ -44,11 +44,18 @@
             </div>
 
             <c:if test="${sessionScope.rol == 'cliente'}">
-              <form method="post" action="${pageContext.request.contextPath}/carrito" class="product-detail-actions">
-                <input type="hidden" name="accion" value="agregar">
-                <input type="hidden" name="id" value="${producto.idProducto}">
-                <button type="submit" class="btn btn-primary btn-block btn-lg">Agregar al carrito</button>
-              </form>
+              <div class="product-detail-actions">
+                <form method="post" action="${pageContext.request.contextPath}/carrito">
+                  <input type="hidden" name="accion" value="agregar">
+                  <input type="hidden" name="id" value="${producto.idProducto}">
+                  <button type="submit" class="btn btn-primary btn-block btn-lg">Agregar al carrito</button>
+                </form>
+                <form method="post" action="${pageContext.request.contextPath}/favoritos">
+                  <input type="hidden" name="id" value="${producto.idProducto}">
+                  <input type="hidden" name="volver" value="/producto?id=${producto.idProducto}">
+                  <button type="submit" class="btn btn-secondary btn-block">&hearts; Favorito (agregar/quitar)</button>
+                </form>
+              </div>
             </c:if>
           </div>
         </div>
