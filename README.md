@@ -30,6 +30,35 @@ licoreria-el-cielo-java/
 └── README.md
 ```
 
+## Aplicación web en Java (Servlets + JSP + JDBC)
+
+Además del módulo de consola, el proyecto incluye una **aplicación web completa**
+construida con **Servlets + JSP + JDBC** sobre **Maven** y **Tomcat 10**, que migra
+todo el prototipo `web/` a Java (arquitectura MVC por capas: `modelo`, `dao`,
+`servlet`, `filtro` y vistas `WEB-INF/jsp/`).
+
+**Módulos:** login/registro/logout con roles, catálogo, detalle, carrito, checkout,
+pedidos, perfil, favoritos, promociones (cliente); dashboard, inventario (CRUD),
+usuarios, promociones y reportes (admin).
+
+### Cómo ejecutar la app web
+1. Crear la base de datos y tablas (una vez):
+   ```
+   mysql -u root -p < database/licoreria_el_cielo.sql
+   mysql -u root -p < database/usuarios.sql
+   mysql -u root -p < database/esquema_web.sql
+   ```
+2. Levantar el servidor (Tomcat 10 embebido, lo descarga Maven):
+   ```
+   mvn cargo:run
+   ```
+3. Abrir **http://localhost:8080/licoreria**
+   - Cliente: `cliente@elcielo.com` / `123456`
+   - Admin: `admin@elcielo.com` / `admin123`
+
+Requisitos: JDK 17+ y Maven. Ajusta usuario/clave de MySQL en
+`src/main/java/com/licoreriaelcielo/conexion/ConexionBaseDatos.java` si difieren.
+
 ## Interfaz web (prototipo)
 
 La carpeta `web/` contiene un **prototipo de interfaz** (HTML + CSS + JavaScript)
