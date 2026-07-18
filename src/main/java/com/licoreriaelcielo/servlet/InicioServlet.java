@@ -23,7 +23,7 @@ public class InicioServlet extends HttpServlet {
         // Redirigir a la pantalla principal según el rol.
         Object rol = request.getSession().getAttribute("rol");
         if ("admin".equals(rol)) {
-            response.sendRedirect(request.getContextPath() + "/inventario");
+            response.sendRedirect(request.getContextPath() + "/dashboard");
         } else {
             response.sendRedirect(request.getContextPath() + "/catalogo");
         }

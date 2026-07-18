@@ -36,8 +36,12 @@
         </c:when>
         <%-- ====== ADMIN ====== --%>
         <c:otherwise>
+          <a class="dashboard-tab ${actual == 'dashboard' ? 'active' : ''}" href="${ctx}/dashboard">Dashboard</a>
           <a class="dashboard-tab ${actual == 'inventario' ? 'active' : ''}" href="${ctx}/inventario">Inventario</a>
           <a class="dashboard-tab ${actual == 'catalogo' ? 'active' : ''}" href="${ctx}/catalogo">Catálogo</a>
+          <a class="dashboard-tab ${actual == 'usuarios' ? 'active' : ''}" href="${ctx}/usuarios">Usuarios</a>
+          <a class="dashboard-tab ${actual == 'admin-promociones' ? 'active' : ''}" href="${ctx}/admin-promociones">Promociones</a>
+          <a class="dashboard-tab ${actual == 'reportes' ? 'active' : ''}" href="${ctx}/reportes">Reportes</a>
         </c:otherwise>
       </c:choose>
     </div>

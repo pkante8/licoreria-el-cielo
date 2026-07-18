@@ -116,6 +116,73 @@ public class PedidoDao {
         return pedidos;
     }
 
+    /** Número total de pedidos registrados (para el dashboard/reportes). */
+    public int contarPedidos() {
+        return unEntero("SELECT COUNT(*) FROM pedidos");
+    }
+
+    /** Suma de ventas de todos los pedidos (para el dashboard/reportes). */
+    public double sumaVentas() {
+        Connection conexion = ConexionBaseDatos.obtenerConexion();
+        if (conexion == null) {
+            return 0;
+        }
+        try (PreparedStatement ps = conexion.prepareStatement("SELECT COALESCE(SUM(total),0) FROM pedidos");
+                ResultSet rs = ps.executeQuery()) {
+            return rs.next() ? rs.getDouble(1) : 0;
+        } catch (SQLException e) {
+            System.out.println("Error al sumar ventas: " + e.getMessage());
+            return 0;
+        } finally {
+            ConexionBaseDatos.cerrarConexion(conexion);
+        }
+    }
+
+    /** Lista todos los pedidos (con el nombre del cliente) para reportes. */
+    public List<Pedido> listarTodos() {
+        List<Pedido> pedidos = new ArrayList<>();
+        String sql = "SELECT p.id_pedido, DATE_FORMAT(p.fecha,'%Y-%m-%d %H:%i') AS fecha_fmt, "
+                + "p.estado, p.total, CONCAT(u.nombres,' ',COALESCE(u.apellidos,'')) AS cliente "
+                + "FROM pedidos p JOIN usuarios u ON u.id_usuario = p.id_usuario "
+                + "ORDER BY p.id_pedido DESC";
+        Connection conexion = ConexionBaseDatos.obtenerConexion();
+        if (conexion == null) {
+            return pedidos;
+        }
+        try (PreparedStatement ps = conexion.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Pedido p = new Pedido();
+                p.setIdPedido(rs.getInt("id_pedido"));
+                p.setFecha(rs.getString("fecha_fmt"));
+                p.setEstado(rs.getString("estado") + " · " + rs.getString("cliente"));
+                p.setTotal(rs.getDouble("total"));
+                pedidos.add(p);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al listar todos los pedidos: " + e.getMessage());
+        } finally {
+            ConexionBaseDatos.cerrarConexion(conexion);
+        }
+        return pedidos;
+    }
+
+    private int unEntero(String sql) {
+        Connection conexion = ConexionBaseDatos.obtenerConexion();
+        if (conexion == null) {
+            return 0;
+        }
+        try (PreparedStatement ps = conexion.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
+            return rs.next() ? rs.getInt(1) : 0;
+        } catch (SQLException e) {
+            System.out.println("Error en consulta de conteo: " + e.getMessage());
+            return 0;
+        } finally {
+            ConexionBaseDatos.cerrarConexion(conexion);
+        }
+    }
+
     private List<PedidoItem> listarItems(Connection conexion, int idPedido) throws SQLException {
         List<PedidoItem> items = new ArrayList<>();
         String sql = "SELECT id_producto, nombre_producto, cantidad, precio_unitario "

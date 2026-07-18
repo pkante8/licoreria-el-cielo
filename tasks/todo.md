@@ -81,8 +81,8 @@ Hoy solo existe la tabla `productos`. Se añadirán scripts en `database/`:
 - [x] **Fase 2 — Productos (núcleo):** Catálogo + Detalle + Inventario CRUD (reusa `ProductoDao`). ✔ **Verificado**: catálogo lista desde BD, detalle, inventario con estadísticas, y CRUD completo (agregar/editar/eliminar) + guard admin. Nav lateral compartido (`nav.jsp`).
 - [x] **Fase 3 — Compra:** Carrito + Checkout + Pedidos. ✔ Verificado: agregar/cantidades, checkout, pedido en BD (transaccion), carrito se vacia.
 - [x] **Fase 4 — Cliente extra:** Perfil + Favoritos + Promociones. ✔ Verificado: perfil persiste, favoritos agregar/quitar, promociones activas desde BD.
-- [ ] **Fase 5 — Admin extra:** Dashboard + Usuarios + Promos admin + Reportes.
-- [ ] **Fase 6 — Verificación final:** correr en Tomcat, probar cada formulario, capturas.
+- [x] **Fase 5 — Admin extra:** Dashboard + Usuarios + Promos admin + Reportes. ✔ Verificado: KPIs desde BD, suspender/reactivar usuarios, CRUD promociones, reportes con listado de pedidos + guard admin.
+- [x] **Fase 6 — Verificación final:** cada módulo probado end-to-end en Tomcat (login, catálogo, detalle, carrito, checkout, pedidos, perfil, favoritos, promociones, dashboard, inventario CRUD, usuarios, promos-admin, reportes).
 
 Cada fase = commit propio (autor `pkante8`, sin coautor) + push cuando lo indiques.
 
